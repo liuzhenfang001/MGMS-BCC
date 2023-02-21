@@ -1,0 +1,2 @@
+8 test_queries/data/test.txt MG-MBFS
+8 test_queries/data/test.txt MG-MBFS
