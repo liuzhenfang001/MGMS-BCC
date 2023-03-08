@@ -1,3 +1,7 @@
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include "head/GraphFromFile.hpp"
 #include <iostream>
 //#define unDIRECTED
@@ -43,7 +47,7 @@ void GraphFromFile::init(const std::string& edgesFile) {
 	io::MmapedFile file(data_path, O_RDONLY);
 
 	Tokenizer tokenizer(file.mapping, file.size);
-	tokenizer.skipLine(); // Skip header line 
+	tokenizer.skipLine(); // Skip header line
 
 	std::vector<NodePair> temp_edges;
 	temp_edges.reserve(2*numEdges);
@@ -61,7 +65,7 @@ void GraphFromFile::init(const std::string& edgesFile) {
 	temp_edges.push_back(NodePair(pair.idB,pair.idA));
 #endif // unDIRECTED
 
-		
+
 	}
 
 	//quick_sort(temp_edges, pro, 0, numEdges - 1);

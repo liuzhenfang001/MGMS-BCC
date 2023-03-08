@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include "head/parabfs.hpp"
 #include "head/TraceStats.hpp"
 
@@ -86,7 +87,7 @@ namespace Query4 {
       while(friendsBounds.first != friendsBounds.second) {
         uint32_t v = *friendsBounds.first;
         {
-            if (!PARABFSRunner::kdata->visited[v]) //This command would reduces executing atomic operations 
+            if (!PARABFSRunner::kdata->visited[v]) //This command would reduces executing atomic operations
             {
 #if USE_ATOMIC
               bool b = false;
@@ -132,13 +133,13 @@ namespace Query4 {
     PARABFSRunner::kdata->workerBusy = kdata->numThreads;
     PARABFSRunner::kdata->condWork.notify_all();
   }
-  
+
   void PARABFSRunner::pfree(){
     free(PARABFSRunner::kdata->queue);
-    free(PARABFSRunner::kdata->visited); 
+    free(PARABFSRunner::kdata->visited);
     free(PARABFSRunner::kdata->cc);
   }
-  
+
   void PARABFSRunner::waitForWorkers() {
     boost::mutex::scoped_lock lock(PARABFSRunner::kdata->mutex);
     if (PARABFSRunner::kdata->workerBusy>0)

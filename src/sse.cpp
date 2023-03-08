@@ -1,8 +1,9 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include "head/sse.hpp"
- 
+
 __m128i sseMasks[128] = {
    _mm_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000001),
    _mm_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000002),

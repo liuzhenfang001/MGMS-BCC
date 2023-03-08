@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include "include/bench.hpp"
 #include "include/TraceStats.hpp"
 
@@ -15,7 +16,7 @@ int main(int argc, char** argv) {
    size_t numThreads = std::thread::hardware_concurrency()/2;
    if(argc>3) {
       numThreads = std::stoi(std::string(argv[3]));
-   } 
+   }
    LOG_PRINT("[Main] Using "<< numThreads <<" threads");
 
    size_t bfsLimit = std::numeric_limits<uint64_t>::max();

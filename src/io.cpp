@@ -1,11 +1,12 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include "head/io.hpp"
 #include "head/log.hpp"
 
 #include <iostream>
-#include <fstream> 
+#include <fstream>
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/mman.h>

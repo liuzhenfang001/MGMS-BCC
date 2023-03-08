@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include <iostream>
 #include <sstream>
 #include <random>
@@ -45,7 +46,7 @@ size_t getMaxMorselBatchSize() {
       return atoi(userBatchSizeStr);
    } else {
       return std::numeric_limits<size_t>::max();
-   } 
+   }
 }
 
 vector<double> getCloseness(uint32_t* totalPersons,uint64_t* totalDistances,uint32_t totalgraphsize) {
@@ -79,7 +80,7 @@ ResultConcatenator::ResultConcatenator(QueryState* state, const char*& resultOut
    #ifdef STATISTICS
    , statistics(statistics)
    #endif
-{ 
+{
 }
 
 void ResultConcatenator::operator()() {
@@ -104,4 +105,4 @@ void ResultConcatenator::operator()() {
    resultOut = resultBuffer;
    delete state;
 }
-} 
+}

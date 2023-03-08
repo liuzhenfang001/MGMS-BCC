@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include "head/log.hpp"
 
 #include <chrono>
@@ -12,7 +13,7 @@ tschrono::Time tschrono::now() {
 }
 
 void tschrono::TimeFrame::start() {
-   startTime=tschrono::now(); 
+   startTime=tschrono::now();
 }
 
 void tschrono::TimeFrame::end() {

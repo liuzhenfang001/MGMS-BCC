@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include "head/naive.hpp"
 #include "head/TraceStats.hpp"
 #include <vector>
@@ -14,7 +15,7 @@ namespace Query4 {
 struct BatchBit {
 	static const size_t TYPE_BITS_COUNT = sizeof(bit_t) * 8;
 	bit_t data[width];
-	
+
 	BatchBit() : data() {
 	}
 	void negate() {

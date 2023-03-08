@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include "head/tokenizer.hpp"
 #include "head/graph.hpp"
 #include "head/io.hpp"
@@ -11,7 +12,7 @@ using namespace std;
 
 GraphData GraphData::loadFromPath(const std::vector<NodePair>& GraphEdges, const std::vector<float>& GraphWeight) {//重载loadFromPath函数
    // Count number of persons (excluding header line)
-	
+
    std::unordered_map<uint64_t,uint64_t> nodeRenaming;
    std::unordered_map<uint64_t,uint64_t> revNodeRenaming;
    uint64_t nextNodeId=0;
@@ -34,10 +35,10 @@ GraphData GraphData::loadFromPath(const std::vector<NodePair>& GraphEdges, const
          last = a;
          uniqueEdges[e++] = NodePair(mapExternalNodeId(a.idA), a.idB);
       }
-   } 
+   }
    uniqueEdges.resize(e);
-   for(NodePair& a : uniqueEdges) {  
-      a.idB = mapExternalNodeId(a.idB); 
+   for(NodePair& a : uniqueEdges) {
+      a.idB = mapExternalNodeId(a.idB);
    }
    return GraphData(nextNodeId, move(uniqueEdges), move(revNodeRenaming));
 }
@@ -92,7 +93,7 @@ GraphData GraphData::loadFromPath(const std::vector<NodePair>& GraphEdges, const
 	io::MmapedFile file(data_path, O_RDONLY);
 
 	Tokenizer tokenizer(file.mapping, file.size);
-	tokenizer.skipLine(); // Skip header line 
+	tokenizer.skipLine(); // Skip header line
 
 	vector<NodePair> edges;
 	edges.reserve(numEdges);
@@ -140,7 +141,7 @@ GraphData GraphData::loadFromPath(const std::vector<NodePair>& GraphEdges, const
 	  // std::cout << edges[i].idA << " " << edges[i].idB<<" | ";
 	   //if (i % 20 == 0)
 		 //   std::cout << std::endl;
-	//} 
+	//}
 	//int ioss;
 	//std::cin >> ioss;
 
@@ -182,7 +183,7 @@ void GraphData::quick_sort(vector<NodePair>& edges,vector<float>& pro ,int l, in
 				edges[i] = edges[j];
 				pro[i++] = pro[j];
 			}
-			
+
 			while (i < j && (edges[i].idA < x.idA || (edges[i].idA == x.idA && edges[i].idB < x.idB))) // 从左向右找第一个大于等于x的数
 				i++;
 			if (i < j) {
@@ -192,13 +193,13 @@ void GraphData::quick_sort(vector<NodePair>& edges,vector<float>& pro ,int l, in
 		}
 		edges[i] = x;
 		pro[i] = p;
-		quick_sort(edges,pro, l, i - 1); // 递归调用 
+		quick_sort(edges,pro, l, i - 1); // 递归调用
 		quick_sort(edges,pro, i + 1, r);
 	}
 }
 
 GraphData GraphData::sampledata(const std::vector<NodePair>& GraphEdges, const std::vector<float>& GraphWeight) {//重载loadFromPath函数
-	
+
 	std::vector<NodePair> edges;
 	//std::vector<float> pro;
 	/*for (int i = 0; i < GraphEdges.size();i++) {
@@ -243,7 +244,7 @@ GraphData GraphData::sampledata(const std::vector<NodePair>& GraphEdges, const s
 	for (NodePair& a : uniqueEdges) {
 		a.idB = mapExternalNodeId(a.idB);
 	}
-	
+
 	return GraphData(nextNodeId, move(uniqueEdges), move(revNodeRenaming));
 }
 
@@ -279,7 +280,7 @@ GraphData GraphData::sampledata(const std::vector<NodePair>& GraphEdges, const s
 	io::MmapedFile file(data_path, O_RDONLY);
 
 	Tokenizer tokenizer(file.mapping, file.size);
-	tokenizer.skipLine(); // Skip header line 
+	tokenizer.skipLine(); // Skip header line
 
 	vector<NodePair> edges;
 	edges.reserve(numEdges);
@@ -329,7 +330,7 @@ GraphData GraphData::sampledata(const std::vector<NodePair>& GraphEdges, const s
 			edges.push_back(NodePair(pair.idB, pair.idA));
 	}
 
-	
+
 	//LOG_PRINT("size() of edges = " << edges.size());
 
 	quick_sort(edges, pro, 0, pro.size()-1);
@@ -338,7 +339,7 @@ GraphData GraphData::sampledata(const std::vector<NodePair>& GraphEdges, const s
 		std::cout << edges[i].idA << " " << edges[i].idB<<" | ";
 		if (i % 20 == 0)
 			std::cout << std::endl;
-	} 
+	}
 
 
 	vector<NodePair> uniqueEdges(edges.size());
@@ -358,7 +359,7 @@ GraphData GraphData::sampledata(const std::vector<NodePair>& GraphEdges, const s
 	//LOG_PRINT("[LOADING] Sorted edges");
 	if (isUCG)
 		LOG_PRINT("[LOADING] Number of nodes: " << nextNodeId);
-	std::vector<float> a; 
+	std::vector<float> a;
 	return GraphData(nextNodeId, move(uniqueEdges), move(revNodeRenaming), a);
 }*/
 
@@ -406,7 +407,7 @@ GraphData GraphData::sampledata(const std::vector<NodePair>& GraphEdges, const s
 		edges.push_back(pair);
 		edges.push_back(NodePair(pair.idB, pair.idA));
 	}
-	LOG_PRINT("size() of edges = " << edges.size()); 
+	LOG_PRINT("size() of edges = " << edges.size());
 
 	// Reading edge
 	LOG_PRINT("[LOADING] Read edges");
@@ -425,7 +426,7 @@ GraphData GraphData::sampledata(const std::vector<NodePair>& GraphEdges, const s
 		}
 	}
 	uniqueEdges.resize(e);
-	for (NodePair& a : uniqueEdges) {  
+	for (NodePair& a : uniqueEdges) {
 		a.idB = mapExternalNodeId(a.idB);
 	}
 	LOG_PRINT("size() of uniqueEdges = " << uniqueEdges.size());
