@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include <vector>
@@ -62,7 +63,7 @@ struct TaskOrderCmp {
 
 // Priority ordered scheduler
 class Scheduler {
-   std::priority_queue<OrderedTask, std::vector<OrderedTask>, TaskOrderCmp> ioTasks;//优先级队列（数据类型，容器类型，比较方式）
+   std::priority_queue<OrderedTask, std::vector<OrderedTask>, TaskOrderCmp> ioTasks;//Priority queues (data type, container type, comparison mode)
    std::priority_queue<OrderedTask, std::vector<OrderedTask>, TaskOrderCmp> workTasks;
    std::mutex taskMutex;
    std::condition_variable taskCondition;
@@ -96,7 +97,7 @@ struct Executor {
    const uint32_t coreId;
    Scheduler& scheduler;
 
-   Executor(Scheduler& scheduler, uint32_t coreId, bool preferIO) 
+   Executor(Scheduler& scheduler, uint32_t coreId, bool preferIO)
       : preferIO(preferIO), coreId(coreId), scheduler(scheduler) {
    }
 

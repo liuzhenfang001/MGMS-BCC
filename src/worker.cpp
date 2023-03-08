@@ -13,7 +13,8 @@ Workers::Workers(uint32_t numWorkers) : scheduler() {
    }
 }
 
-void Workers::assist(Scheduler& tasks) {//用LambdaRunner封装一个Lambda表达式，所产生的的Task放在Workers->scheduler->IoTasks
+//A lambda expression is wrapped with a LambdaRunner, and the resulting Task is placed in the Workers->scheduler->IoTasks
+void Workers::assist(Scheduler& tasks) {
    for (unsigned i = 0; i < threads.size(); ++i) {
       scheduler.schedule(LambdaRunner::createLambdaTask([&tasks, i] {
          Executor(tasks,i+1, false).run();

@@ -1,6 +1,7 @@
-// Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-// Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "log.hpp"
@@ -64,7 +65,7 @@ class TraceStats
     long num_neigber = 0;
     double num_stat = 0;
     size_t numR;
-    std::array<std::atomic<size_t>, maxRounds> numRounds; // atomic<size_t>�����ı�������ԭ�ӻ��ģ���ԭ�Ӳ���
+    std::array<std::atomic<size_t>, maxRounds> numRounds; // atomic<size_t>
     std::array<std::atomic<size_t>, maxRounds> roundDurations;
     // std::array<std::array<std::atomic<size_t>, numBits>, maxRounds> roundVisitBits;
     // std::array<std::array<std::atomic<size_t>, numBits>, maxRounds> roundFriendBits;

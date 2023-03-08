@@ -14,13 +14,13 @@ using namespace std;
 
 std::vector<pair<Query4::PersonId,Query4::PersonId>> generateTasks(const uint64_t maxBfs, const Query4::PersonId graphSize, const size_t batchSize) {
    // Determine number of persons
-   Query4::PersonId numBfs = graphSize<maxBfs?graphSize:maxBfs;//BFS总数
+   Query4::PersonId numBfs = graphSize<maxBfs?graphSize:maxBfs;//the total number of BFS
 
    // Initialize task size as max of minMorselSize and batchSize;
-   uint32_t taskSize=batchSize<Query4::minMorselSize?Query4::minMorselSize:batchSize;//bfs并行数
+   uint32_t taskSize=batchSize<Query4::minMorselSize?Query4::minMorselSize:batchSize;//the thread number of NFS
 
    // Increase task size until max morsel tasks limit is met
-   while(numBfs/taskSize>Query4::maxMorselTasks) {//次数（任务大小）不能超过maxMorselTasks256000
+   while(numBfs/taskSize>Query4::maxMorselTasks) {//Execution times(Task size) cannot exceed maxMorsel Tasks=256000
       taskSize+=batchSize;
    }
 
@@ -50,7 +50,7 @@ size_t getMaxMorselBatchSize() {
 }
 
 vector<double> getCloseness(uint32_t* totalPersons,uint64_t* totalDistances,uint32_t totalgraphsize) {
-	//新版
+	// new version
 	vector<double> res;
 	for (int i = 0; i < SAMPLE_NUMS; i++) {
 		if (totalDistances[i] > 0 && totalgraphsize > 0 && totalPersons[i] > 0) {
@@ -61,7 +61,7 @@ vector<double> getCloseness(uint32_t* totalPersons,uint64_t* totalDistances,uint
 		}
 	}
 	return res;
-	//旧版
+	// old version
 	/*if (totalDistances > 0 && totalgraphsize > 0 && totalPersons > 0) {
 		return ((static_cast<double>(totalPersons)/(sizeof(BITYPE) * 8 * BITYPE_WIDTH) - 1 )*(static_cast<double>(totalPersons) / (sizeof(BITYPE) * 8 * BITYPE_WIDTH) - 1))/ (static_cast<double>(totalgraphsize)*static_cast<double>(totalDistances )/ (sizeof(BITYPE) * 8 * BITYPE_WIDTH));//static_cast<double>((sizeof(BITYPE) * 8 * BITYPE_WIDTH))
 	}
@@ -96,7 +96,7 @@ void ResultConcatenator::operator()() {
       if(i>0) {
          output<<"|";
       }
-      output<<state->subgraph.mapInternalNodeId(topEntries[i].first)<<" "<< topEntries[i].second;//返回顶点id对应的真实id
+      output<<state->subgraph.mapInternalNodeId(topEntries[i].first)<<" "<< topEntries[i].second;//Returns the real ID corresponding to the virtual vertex ID
    }
    const auto& outStr = output.str();
    auto resultBuffer = new char[outStr.size()+1];

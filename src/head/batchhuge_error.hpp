@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "../TraceStats.hpp"
@@ -72,7 +73,7 @@ struct HugeBatchBfs {
    static const unsigned int PREFETCH=38;
    #endif
    static const size_t BATCH_BITS_COUNT = sizeof(bit_t)*width*8;
-   typedef BatchBits<bit_t, width> Bitset;//表示一个顶点的bfs情况
+   typedef BatchBits<bit_t, width> Bitset;//Represents the BFS visited states of a vertex
 
    static constexpr uint64_t batchSize() {
       return BATCH_BITS_COUNT;
@@ -89,7 +90,7 @@ struct HugeBatchBfs {
       // Initialize visit lists
       std::array<Bitset*,2> visitLists;
       for(int a=0; a<2; a++) {
-         const auto ret=posix_memalign(reinterpret_cast<void**>(&(visitLists[a])),64,sizeof(Bitset)*subgraphSize);//数据对齐（分配内存首地址，对齐边界，指定分配字节大小）
+         const auto ret=posix_memalign(reinterpret_cast<void**>(&(visitLists[a])),64,sizeof(Bitset)*subgraphSize);//Data alignment (allocate first memory address, align boundary, specify allocation byte size)
          if(unlikely(ret!=0)) {
             throw -1;
          }
@@ -97,7 +98,7 @@ struct HugeBatchBfs {
       }
 
 
-      const uint32_t numQueries = bfsData.size();//本次并行的源点数，即bfs数
+      const uint32_t numQueries = bfsData.size();//The number of parallel source vertices, that is the number of BFSs
       assert(numQueries>0 && numQueries<=BATCH_BITS_COUNT);
 
       // Initialize seen vector
@@ -125,16 +126,16 @@ struct HugeBatchBfs {
          minPerson = std::min(minPerson, bfsData[pos].person);
 
          #ifdef BI_DIRECTIONAl
-         visitNeighbors += subgraph.retrieve(bfsData[pos].person)->size();//计算源点邻居数目和
+         visitNeighbors += subgraph.retrieve(bfsData[pos].person)->size();//Calculate the sum of the number of source vertex's neighbors
          #endif
       }
 
       // Initialize iteration workstate
-      Bitset processQuery;//processQuery中的每一位，1表示bfs没有搜索完，0表示已经搜索完
-      processQuery.negate();//全置为1
+      Bitset processQuery;//For each bit in processQuery, 1 means that the bfs has not finished searching, and 0 means that the search has been completed
+      processQuery.negate();//Set all to 1
 
       uint32_t queriesToProcess=numQueries;//代表还剩余的bfs数
-      alignas(64) uint32_t numDistDiscovered[BATCH_BITS_COUNT];//512，numDistDiscovered每一个数据代表该bfs在一轮搜索中搜索到的新的顶点数
+      alignas(64) uint32_t numDistDiscovered[BATCH_BITS_COUNT];//512, every data in numDistDiscoveredEach represents the number of new vertices that the bfs found in a round of searches
       memset(numDistDiscovered,0,BATCH_BITS_COUNT*sizeof(uint32_t));
 
       BatchDistance<bit_t, width> batchDist(numDistDiscovered);
@@ -147,7 +148,7 @@ struct HugeBatchBfs {
       // Run iterations
       do {
          size_t startTime = tschrono::now();
-         Bitset* const toVisit = visitLists[curToVisitQueue];//visit和visitNext轮替
+         Bitset* const toVisit = visitLists[curToVisitQueue];//visit and visitNext
          Bitset* const nextToVisit = visitLists[1-curToVisitQueue];
 
          assert(toVisit!=nullptr);
@@ -157,7 +158,7 @@ struct HugeBatchBfs {
          unexploredEdges -= visitNeighbors;
          std::pair<uint32_t, uint64_t> frontierInfo;
          if(topDown) {
-            if(visitNeighbors <= unexploredEdges / alpha) {//alpha=14,难道14/2=7是small-World的顶点平均邻居数？？？
+            if(visitNeighbors <= unexploredEdges / alpha) {//alpha=14
                frontierInfo = runBatchRound(subgraph, startPerson, subgraphSize, toVisit, nextToVisit, seen, batchDist, processQuery
                   #if defined(STATISTICS)
                   , statistics, nextDistance
@@ -195,10 +196,10 @@ struct HugeBatchBfs {
                   #endif
                   );
                topDown = true;
-            } 
+            }
          }
-         frontierSize = frontierInfo.first;//本轮bfs探索到的新顶点数
-         visitNeighbors = frontierInfo.second;//本轮bfs探索到的新顶点的邻居数目和
+         frontierSize = frontierInfo.first;//The number of new vertices explored by the current level BFS
+         visitNeighbors = frontierInfo.second;//The number of neighbors of the new vertex explored by the current Level BFS and
          #else
          runBatchRound(subgraph, startPerson, subgraphSize, toVisit, nextToVisit, seen, batchDist, processQuery
                   #if defined(STATISTICS)
@@ -238,7 +239,7 @@ struct HugeBatchBfs {
 
          // Reset iteration state
          //memset(visitLists[curToVisitQueue],0,sizeof(Bitset)*subgraphSize);
-         memset(numDistDiscovered,0,BATCH_BITS_COUNT*sizeof(uint32_t));//本轮结束，统计下一轮的BFS探索的新定点数
+         memset(numDistDiscovered,0,BATCH_BITS_COUNT*sizeof(uint32_t));//The current level ends, and the number of new vertices explored by BFS for the next level is counted
 
          // Swap queues
          startPerson = 0;
@@ -269,7 +270,7 @@ struct HugeBatchBfs {
       #ifdef DO_PREFETCH
       const int p2=min(PREFETCH, (unsigned int)(limit-startPerson));//PREFETCH=38
       for(int a=1; a<p2; a++) {
-         __builtin_prefetch(visitList + a,0);//visitList数据预取，不超过38，少了startperson???
+         __builtin_prefetch(visitList + a,0);//
          // pref=(visitList + a)->data[0];
       }
       #endif
@@ -315,7 +316,7 @@ struct HugeBatchBfs {
             continue;
          }
 
-         const auto& curFriends=*subgraph.retrieve(curPerson);//获得邻居节点
+         const auto& curFriends=*subgraph.retrieve(curPerson);//get neighbors
          auto friendsBounds = curFriends.bounds();
          #ifdef DO_PREFETCH
          const int p=min(PREFETCH, (unsigned int)(friendsBounds.second-friendsBounds.first));
@@ -361,7 +362,7 @@ struct HugeBatchBfs {
       uint32_t frontierSize = 0;
       uint64_t nextVisitNeighbors = 0;
       #endif
-      for (PersonId curPerson = 0; curPerson<limit; ++curPerson) {//为什么从0开始？因为nextvisitList记录了邻居，随机分布
+      for (PersonId curPerson = 0; curPerson<limit; ++curPerson) {//
          #ifdef BI_DIRECTIONAl
          bool nextVisitNonzero=false;
          #endif
@@ -383,7 +384,7 @@ struct HugeBatchBfs {
          #ifdef BI_DIRECTIONAl
          if(nextVisitNonzero) {
             frontierSize++;//新搜索到的顶点数
-            nextVisitNeighbors += subgraph.retrieve(curPerson)->size();//新搜索到的顶点数的邻居数
+            nextVisitNeighbors += subgraph.retrieve(curPerson)->size();//The number of neighbors for the newly discovered number of vertices
          }
          #endif
       }
@@ -421,7 +422,7 @@ struct HugeBatchBfs {
       #ifdef DO_PREFETCH
       const int p2=min(PREFETCH, (unsigned int)(limit-startPerson));//PREFETCH=38
       for(int a=1; a<p2; a++) {
-         __builtin_prefetch(seen + a,0);//数据预取
+         __builtin_prefetch(seen + a,0);//Data prefetching
       }
       #endif
 
@@ -639,7 +640,7 @@ struct HugeBatchBfs {
    }
 
    #endif
-   //processQuery中的每一位，1表示bfs没有搜索完，0表示已经搜索完
+   //For each bit in processQuery, 1 means that the bfs has not finished searching, and 0 means that the search has been completed
    //updateProcessQuery(processQuery, pos, numDistDiscovered[pos], bfsData[pos], nextDistance, queriesToProcess);
    static void updateProcessQuery(Bitset& processQuery, const uint32_t pos, const uint32_t numDiscovered,
        BatchBFSdata& bfsData, const uint32_t distance, uint32_t& queriesToProcess) {
@@ -647,8 +648,8 @@ struct HugeBatchBfs {
       auto field_bit = pos-(field*Bitset::TYPE_BITS_COUNT);
 
       if(BitBaseOp<bit_t>::notZero(processQuery.data[field] & BitBaseOp<bit_t>::getSetMask(field_bit))) {
-         bfsData.totalReachable += numDiscovered;//某一个源点总共搜索的顶点，除去源点
-         bfsData.totalDistances += numDiscovered*distance;//某一个源点总共搜索的距离
+         bfsData.totalReachable += numDiscovered;//A total number of visited vertices for a certain source vertex, excluding the source vertex
+         bfsData.totalDistances += numDiscovered*distance;//The total distance visited from a certain source vertex
 
          if((bfsData.componentSize-1)==bfsData.totalReachable) {
             processQuery.data[field] = BitBaseOp<bit_t>::andNot(processQuery.data[field], BitBaseOp<bit_t>::getSetMask(field_bit));

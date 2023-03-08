@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "queue.hpp"
@@ -24,7 +25,7 @@ namespace Query4 {
       } else {
          toVisitPtr = new awfy::FixedSizeQueue<PersonId>(queueSize);
          return *toVisitPtr;
-    
+
       }
    }
 
@@ -32,13 +33,13 @@ namespace Query4 {
       const PersonId person;
       const Persons componentSize;
 
-	  Distances totalDistances[SAMPLE_NUMS];//探索的距离
-	  Persons totalReachable[SAMPLE_NUMS];//探索到的顶点数
+	  Distances totalDistances[SAMPLE_NUMS];//search distance
+	  Persons totalReachable[SAMPLE_NUMS];//the number of visited vertices
 
       BatchBFSdata(PersonId person, Persons componentSize)
          : person(person), componentSize(componentSize),
            totalDistances(),totalReachable()
-      { 
+      {
 		  memset(totalDistances, 0, sizeof(Distances) * SAMPLE_NUMS);
 		  memset(totalReachable, 0, sizeof(Persons) * SAMPLE_NUMS);
 	  }

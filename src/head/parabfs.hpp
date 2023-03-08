@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "base.hpp"
@@ -11,7 +12,7 @@
 #define TOPK       7
 namespace Query4 {
 
-struct PARABFSRunner {  
+struct PARABFSRunner {
   static const size_t TYPE=1;
   static const size_t WIDTH=1;
   static const size_t TYPE_BITS=8;
@@ -36,12 +37,12 @@ struct PARABFSRunner {
   };
 
   typedef std::pair<uint32_t, double> CC;
-  struct CompareCC{ 
-    bool operator()(const CC &lhs, const CC &rhs) const{ 
-      if (lhs.second == rhs.second) 
-        return (lhs.first < rhs.first); 
-      return (lhs.second > rhs.second); 
-    } 
+  struct CompareCC{
+    bool operator()(const CC &lhs, const CC &rhs) const{
+      if (lhs.second == rhs.second)
+        return (lhs.first < rhs.first);
+      return (lhs.second > rhs.second);
+    }
   };
 
   struct KData{
@@ -78,7 +79,7 @@ struct PARABFSRunner {
     kdata->shutdown = true;
     isInitialized = true;
   }
- 
+
   static void setThreadNum(int nThreads)
   {
     kdata->numThreads = nThreads;
@@ -120,7 +121,7 @@ struct PARABFSRunner {
   }
 
   static void waitForWorkers();
-  static void worker(TraverseParams *param, const PersonSubgraph& subgraph); 
+  static void worker(TraverseParams *param, const PersonSubgraph& subgraph);
   static void stop();
   static void pfree();
   static void dispatchToWorkers();

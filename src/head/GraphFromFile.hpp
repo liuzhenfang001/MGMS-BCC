@@ -1,3 +1,7 @@
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 #include <stdlib.h>
 #include <algorithm>
@@ -7,7 +11,7 @@
 #include "io.hpp"
 #include "tokenizer.hpp"
 struct NodePair {
-	uint64_t idA;		//uint64_t是long long类型
+	uint64_t idA;		//uint64_t is long long
 	uint64_t idB;
 
 	NodePair() { }
@@ -69,7 +73,7 @@ public:
 		io::MmapedFile file(data_path, O_RDONLY);
 
 		Tokenizer tokenizer(file.mapping, file.size);
-		tokenizer.skipLine(); // Skip header line 
+		tokenizer.skipLine(); // Skip header line
 
 		std::vector<NodePair> edges;
 		edges.reserve(numEdges);
@@ -84,7 +88,7 @@ public:
 			}
 			edges.push_back(pair);
 		}
-		
+
 		quick_sort(edges, pro, 0, numEdges - 1);
 
 		//Remove duplicates去除重复项

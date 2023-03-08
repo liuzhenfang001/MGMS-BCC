@@ -1,6 +1,7 @@
-// Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-// Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 // #define STATISTICS
@@ -38,7 +39,7 @@ namespace Query4
     static const uint32_t minMorselSize = 1;
 
     struct CentralityResult
-    { // ���Ķ�
+    { //
         PersonId person;
         uint64_t distances;
         uint32_t numReachable;
@@ -95,7 +96,7 @@ namespace Query4
         vector<uint8_t> personChecked;
 
         mutex topResultsMutex;
-        awfy::TopKList<PersonId, CentralityResult> topResults; // �洢top-K���ĶȽ��
+        awfy::TopKList<PersonId, CentralityResult> topResults; //
 
         QueryState(const uint32_t k, const PersonSubgraph &subgraph)
             : k(k), subgraph(move(subgraph)), startTime(tschrono::now()), personChecked(subgraph.size()), topResultsMutex(),
@@ -181,7 +182,7 @@ namespace Query4
                 PersonId subgraphPersonId = ids[index];
                 assert(!state.personChecked[subgraphPersonId]);
 
-                const uint32_t componentSize = subgraph.componentSizes[subgraph.personComponents[subgraphPersonId]]; // ��ͨ������С
+                const uint32_t componentSize = subgraph.componentSizes[subgraph.personComponents[subgraphPersonId]]; //
 
                 BatchBFSdata personData(subgraphPersonId, componentSize);
 
@@ -269,7 +270,7 @@ std::string runBFS(const uint32_t k, const Query4::PersonSubgraph &subgraph, Wor
     // Determine bfs order
     TraceStats<500> &stats = TraceStats<500>::getStats();
 
-    std::vector<Query4::PersonId> ids(subgraph.size()); // Ԥ��numVertices���ռ䣬��˳��0,1,2...
+    std::vector<Query4::PersonId> ids(subgraph.size()); //
 
     if (stats.closs_size() == 0)
     {
@@ -349,7 +350,7 @@ std::string runBFS(const uint32_t k, const Query4::PersonSubgraph &subgraph, Wor
     workers.assist(scheduler); //
 
     // Always run one executor on the main thread
-    Executor executor(scheduler, 0, false); // 0�ź�
+    Executor executor(scheduler, 0, false); //
     executor.run();
     runtimeOut = tschrono::now() - start;
 

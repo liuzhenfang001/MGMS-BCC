@@ -1,3 +1,7 @@
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "TraceStats.hpp"
@@ -83,7 +87,7 @@ namespace Query4 {
 		static const unsigned int PREFETCH = 38;
 #endif
 		static const size_t BATCH_BITS_COUNT = sizeof(bit_t)*width * 8;
-		typedef BatchBits<bit_t, width> Bitset;//表示一个顶点的bfs情况
+		typedef BatchBits<bit_t, width> Bitset;//Represents the BFS visited states of a vertex
 
 		static constexpr uint64_t batchSize() {
 			return BATCH_BITS_COUNT;
@@ -94,7 +98,7 @@ namespace Query4 {
 			, BatchStatistics& statistics
 #endif
 		) {
-			const uint32_t numQueries = bfsData.size();//本次并行的源点数，即bfs数
+			const uint32_t numQueries = bfsData.size();//The number of parallel source vertices, that is the number of BFSs
 			assert(numQueries > 0 && numQueries <= BATCH_BITS_COUNT);
 			const auto subgraphSize = subgraph.size();
 
@@ -102,7 +106,8 @@ namespace Query4 {
 			BatchBits<BITYPE, BITYPE_WIDTH>** verstatus;
 			verstatus = new BatchBits<BITYPE, BITYPE_WIDTH>*[subgraphSize]();
 			for (int a = 0; a < subgraphSize; a++) {
-				const auto ret = posix_memalign(reinterpret_cast<void**>(&(verstatus[a])), 64, sizeof(BatchBits<BITYPE, BITYPE_WIDTH>)*numQueries);//数据对齐（分配内存首地址，对齐边界，指定分配字节大小）
+				const auto ret = posix_memalign(reinterpret_cast<void**>(&(verstatus[a])), 64, sizeof(BatchBits<BITYPE, BITYPE_WIDTH>)*numQueries);//Data alignment (allocate first memory address, align boundary, specify allocation byte size)
+
 				if (unlikely(ret != 0)) {
 					std::cout << "unlikely" << std::endl;
 					throw - 1;
@@ -114,7 +119,8 @@ namespace Query4 {
 			BatchBits<BITYPE, BITYPE_WIDTH>** next_verstatus;
 			next_verstatus = new BatchBits<BITYPE, BITYPE_WIDTH>*[subgraphSize]();
 			for (int a = 0; a < subgraphSize; a++) {
-				const auto ret = posix_memalign(reinterpret_cast<void**>(&(next_verstatus[a])), 64, sizeof(BatchBits<BITYPE, BITYPE_WIDTH>)*numQueries);//数据对齐（分配内存首地址，对齐边界，指定分配字节大小）
+				const auto ret = posix_memalign(reinterpret_cast<void**>(&(next_verstatus[a])), 64, sizeof(BatchBits<BITYPE, BITYPE_WIDTH>)*numQueries);//Data alignment (allocate first memory address, align boundary, specify allocation byte size)
+
 				if (unlikely(ret != 0)) {
 					std::cout << "unlikely" << std::endl;
 					throw - 1;
@@ -124,7 +130,8 @@ namespace Query4 {
 
 			std::array<Bitset*, 2> visitLists;
 			for (int a = 0; a < 2; a++) {
-				const auto ret = posix_memalign(reinterpret_cast<void**>(&(visitLists[a])), 64, sizeof(Bitset)*subgraphSize);//数据对齐（分配内存首地址，对齐边界，指定分配字节大小）
+				const auto ret = posix_memalign(reinterpret_cast<void**>(&(visitLists[a])), 64, sizeof(Bitset)*subgraphSize);//Data alignment (allocate first memory address, align boundary, specify allocation byte size)
+
 				if (unlikely(ret != 0)) {
 					throw - 1;
 				}
@@ -158,32 +165,32 @@ namespace Query4 {
 
 				minPerson = std::min(minPerson, per);
 #ifdef BI_DIRECTIONAl
-				visitNeighbors += subgraph.retrieve(per)->size();//计算源点邻居数目和
+				visitNeighbors += subgraph.retrieve(per)->size();//Calculate the sum of the number of source vertex's neighbors
 #endif
 			}
 
 			// Initialize iteration workstate
-			Bitset processQuery;//processQuery中的每一位，1表示bfs没有搜索完，0表示已经搜索完
-			processQuery.negate();//全置为1
+			Bitset processQuery;//For each bit in processQuery, 1 means that the bfs has not finished searching, and 0 means that the search has been completed
+			processQuery.negate();//Set all to 1
 
-			uint32_t queriesToProcess = numQueries;//代表还剩余的bfs数
-			alignas(64) uint32_t numDistDiscovered[BATCH_BITS_COUNT];//512，numDistDiscovered每一个数据代表该bfs在一轮搜索中搜索到的新的顶点数
+			uint32_t queriesToProcess = numQueries;//Represents the number of BFS remaining
+			alignas(64) uint32_t numDistDiscovered[BATCH_BITS_COUNT];//512, every data in numDistDiscoveredEach represents the number of new vertices that the bfs found in a round of searches
 			memset(numDistDiscovered, 0, BATCH_BITS_COUNT * sizeof(uint32_t));
 
 			BatchDistance<bit_t, width> batchDist(numDistDiscovered);
 
 			size_t cur_Q = 0;
 			size_t curToVisitQueue = 0;
-			uint32_t nextDistance = 1;//代表bfs的level
+			uint32_t nextDistance = 1;//the level(depth) of BFS
 
 			PersonId startPerson = minPerson;
 
-			Bitset*  toVisit = visitLists[curToVisitQueue];//visit和visitNext轮替
+			Bitset*  toVisit = visitLists[curToVisitQueue];//visit and visitNext
 			Bitset*  nextToVisit = visitLists[1 - curToVisitQueue];
 			//awfy::FixedSizeQueue<Quadruple<BatchBits<BITYPE, BITYPE_WIDTH>>> &Q = Q_queue0;
 			bool isempty = true;
 			do {
-				toVisit = visitLists[curToVisitQueue];//visit和visitNext轮替
+				toVisit = visitLists[curToVisitQueue];//visit and visitNext
 				nextToVisit = visitLists[1 - curToVisitQueue];
 				isempty = true;
 				size_t startTime = tschrono::now();
@@ -248,7 +255,7 @@ namespace Query4 {
 			/*#ifdef DO_PREFETCH
 						const int p2 = min(PREFETCH, (unsigned int)(limit - startPerson));//PREFETCH=38
 						for (int a = 1; a < p2; a++) {
-							__builtin_prefetch(visitList + a, 0);//visitList数据预取，不超过38，少了startperson???
+							__builtin_prefetch(visitList + a, 0);//VisitList data prefetching, no more than 38
 							// pref=(visitList + a)->data[0];
 						}
 			#endif*/
@@ -272,7 +279,7 @@ namespace Query4 {
 					continue;
 				}
 
-				const auto& curFriends = *subgraph.retrieve(curPerson);//获得邻居节点
+				const auto& curFriends = *subgraph.retrieve(curPerson);//get the neighbors of vertex "curPerson"
 				auto friendsBounds = curFriends.bounds();
 #ifdef DO_PREFETCH
 				const int p = min(PREFETCH, (unsigned int)(friendsBounds.second - friendsBounds.first));
@@ -594,7 +601,7 @@ namespace Query4 {
 		}
 
 #endif
-		//processQuery中的每一位，1表示bfs没有搜索完，0表示已经搜索完
+		//For each bit in processQuery, 1 means that the bfs has not finished searching, and 0 means that the search has been completed
 		//updateProcessQuery(processQuery, pos, numDistDiscovered[pos], bfsData[pos], nextDistance, queriesToProcess);
 		static void updateProcessQuery(Bitset& processQuery, const uint32_t pos, const uint32_t numDiscovered,
 			BatchBFSdata& bfsData, const uint32_t distance, uint32_t& queriesToProcess) {
@@ -602,8 +609,8 @@ namespace Query4 {
 			auto field_bit = pos - (field*Bitset::TYPE_BITS_COUNT);
 
 			// if(BitBaseOp<bit_t>::notZero(processQuery.data[field] & BitBaseOp<bit_t>::getSetMask(field_bit))) {
-			bfsData.totalReachable += numDiscovered;//某一个源点总共搜索的顶点，除去源点
-			bfsData.totalDistances += numDiscovered * distance;//某一个源点总共搜索的距离
+			bfsData.totalReachable += numDiscovered;//A total number of visited vertices for a certain source vertex, excluding the source vertex
+			bfsData.totalDistances += numDiscovered * distance;//The total distance visited from a certain source vertex
 
 			/*if((bfsData.componentSize-1)==bfsData.totalReachable) {
 			   processQuery.data[field] = BitBaseOp<bit_t>::andNot(processQuery.data[field], BitBaseOp<bit_t>::getSetMask(field_bit));

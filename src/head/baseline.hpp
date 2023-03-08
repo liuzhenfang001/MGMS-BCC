@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "base.hpp"
@@ -12,12 +13,12 @@ struct BaseRunner {
 	static const size_t TYPE = 4;
 	static const size_t WIDTH = 1;
 	static const size_t TYPE_BITS = 8;
-	
+
 	static constexpr size_t batchSize() {
 		return 1;
 	}
 	static inline void runBatch(std::vector<BatchBFSdata>& bfsData, const PersonSubgraph& subgraph) {
-		
+
 		//LOG_PRINT("start to run" << bfsData.size());
 		for (size_t i = 0; i < bfsData.size(); i++) {
 			int num_neighber = 0;
@@ -71,7 +72,7 @@ private:
 			}
 			TraceStats<500>& stats = TraceStats<500>::getStats();
 			stats.traceRound(distance);
-			
+
 
 #ifdef COUNTBASIC
 			stats.addcount(num_neighber, num_stat);
@@ -79,7 +80,7 @@ private:
 			num_stat = 0;
 #endif // COUNTBASIC
 
-			
+
 			distance++;
 			visit_count = 1 - visit_count;
 			memset(cur_visit, 0, sizeof(cur_visit));

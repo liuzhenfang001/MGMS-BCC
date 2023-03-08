@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #include "tokenizer.hpp"
 #include "query4.hpp"
 #include "graph.hpp"
@@ -32,16 +33,16 @@ struct Queries {
    static Queries loadFromFile(const std::string& queryFile) {
 	  std::string re_file = "../" + queryFile;
       io::MmapedFile file(re_file, O_RDONLY);
-	  
+
       Queries queries;
 
       Tokenizer tokenizer(file.mapping, file.size);
       // Read queries
       while(!tokenizer.isFinished()) {
          Query query;
-         query.numNodes = tokenizer.readId(' ');//txt文件的第一个数据“id”
-         query.dataset = tokenizer.readStr(' ');//获得csv文件名
-         query.reference = tokenizer.readStr('\n');//获得至最后（中心度最大的top-k参考）
+         query.numNodes = tokenizer.readId(' ');//TXT file first data "id"
+         query.dataset = tokenizer.readStr(' ');//Obtain the csv file name
+         query.reference = tokenizer.readStr('\n');//Get everything in the file (top-k reference of closeness centrality)
          if(query.reference.size()==0) {
             FATAL_ERROR("[Queries] Could not load reference result, is it specified?");
          }

@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "base.hpp"
@@ -77,10 +78,10 @@ struct BFSRunner {
 	static void run(const PersonId start, const PersonSubgraph& subgraph, BatchBFSdata& bfsData) {
 		const auto subgraphSize = subgraph.size();
 		const auto sourcePer = bfsData.person;
-		
+
 		BatchBit<BITYPE, BITYPE_WIDTH>* verstatus;
 		{
-			const auto ret = posix_memalign(reinterpret_cast<void**>(&verstatus), 128, sizeof(BatchBit<BITYPE, BITYPE_WIDTH>)*subgraphSize);//数据对齐（分配内存首地址，对齐边界，指定分配字节大小）
+			const auto ret = posix_memalign(reinterpret_cast<void**>(&verstatus), 128, sizeof(BatchBit<BITYPE, BITYPE_WIDTH>)*subgraphSize);//
 			if (unlikely(ret != 0)) {
 				std::cout << "unlikely" << std::endl;
 				throw - 1;
@@ -89,14 +90,13 @@ struct BFSRunner {
 		}
 		BatchBit<BITYPE, BITYPE_WIDTH>* change_verstatus;
 		{
-			const auto ret = posix_memalign(reinterpret_cast<void**>(&change_verstatus), 128, sizeof(BatchBit<BITYPE, BITYPE_WIDTH>)*subgraphSize);//数据对齐（分配内存首地址，对齐边界，指定分配字节大小）
-			if (unlikely(ret != 0)) {
+			const auto ret = posix_memalign(reinterpret_cast<void**>(&change_verstatus), 128, sizeof(BatchBit<BITYPE, BITYPE_WIDTH>)*subgraphSize);//
 				std::cout << "unlikely" << std::endl;
 				throw - 1;
 			}
 			new(change_verstatus) BatchBit<BITYPE, BITYPE_WIDTH>[subgraphSize]();
 		}
-		
+
 		//size_t maxqueue = 10000000;
 		//awfy::FixedSizeQueue<Queueele<BatchBit<BITYPE, BITYPE_WIDTH>>> Change_Q = awfy::FixedSizeQueue<Queueele<BatchBit<BITYPE, BITYPE_WIDTH>>>(maxqueue);
 
@@ -114,7 +114,7 @@ struct BFSRunner {
 		//VectorPer.push_back(sourcePer);
 		//next_VectorPer.reserve(maxvec);
 
-		alignas(64) uint32_t numDistDiscovered[SAMPLE_NUMS];//512，numDistDiscovered每一个数据代表该bfs在一轮搜索中搜索到的新的顶点数
+		alignas(64) uint32_t numDistDiscovered[SAMPLE_NUMS];//512
 		memset(numDistDiscovered, 0, SAMPLE_NUMS * sizeof(uint32_t));
 		BatchDistance<BITYPE, BITYPE_WIDTH> batchDist(numDistDiscovered);
 
@@ -171,12 +171,12 @@ struct BFSRunner {
 
 #ifdef COUNTMG
 							num_stat += 2;
-#endif // 
+#endif //
 							D.data[s] = verstatus[curPerson].data[s] & subgraph.edgesbit[curPerson][numfriends].data[s] & ~verstatus[*friendsBounds.first].data[s];
 							if (BitBaseOp<BITYPE>::notZero(D.data[s])) {
 #ifdef COUNTMG
 								num_stat += 1;
-#endif // 
+#endif //
 								//std::cout << "cruch in distance = "<< nextDistance << std::endl;
 
 								insert = true;
@@ -191,7 +191,7 @@ struct BFSRunner {
 							for (int s = 0; s < BITYPE_WIDTH; s++) {
 #ifdef COUNTMG
 								num_stat += 2;
-#endif // 
+#endif //
 								change_verstatus[*friendsBounds.first].data[s] |= D.data[s];
 
 							}
@@ -202,20 +202,20 @@ struct BFSRunner {
 							next_VEC_flag[*friendsBounds.first] = 1;
 						}
 					}
-					else {//无冲突
+					else {//No conflicts
 						//std::cout << "no cruch in distance = " << nextDistance << std::endl;
 						bool insert = false;
 
 						for (int s = 0; s < BITYPE_WIDTH; s++) {
 #ifdef COUNTMG
 							num_stat += 2;
-#endif // 
+#endif //
 
 							D.data[s] = verstatus[curPerson].data[s] & subgraph.edgesbit[curPerson][numfriends].data[s] & ~verstatus[*friendsBounds.first].data[s];
 							if (BitBaseOp<BITYPE>::notZero(D.data[s])) {
 #ifdef COUNTMG
 								num_stat += 4;
-#endif // 
+#endif //
 								verstatus[*friendsBounds.first].data[s] |= D.data[s];
 								insert = true;
 								uint64_t numofone = BitBaseOp<BITYPE>::popCount(D.data[s]);
@@ -435,10 +435,10 @@ struct BFSRunner {
 		} while(true);
 
 		delete[] seen;*/
-		
+
    }
 
-   static Persons runRound(const PersonSubgraph& subgraph, Distance* __restrict__ seen, BFSQueue& toVisit, 
+   static Persons runRound(const PersonSubgraph& subgraph, Distance* __restrict__ seen, BFSQueue& toVisit,
       const Persons numToVisit, const Persons numUnseen);
 };
 

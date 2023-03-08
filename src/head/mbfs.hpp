@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "TraceStats.hpp"
@@ -50,7 +51,7 @@ namespace Query4 {
 		static const unsigned int PREFETCH = 38;
 #endif
 		static const size_t BATCH_BITS_COUNT = sizeof(bit_t)*width * 8;
-		typedef BatchBits1<bit_t, width> Bitset;//表示一个顶点的bfs情况
+		typedef BatchBits1<bit_t, width> Bitset;//
 		static constexpr uint64_t batchSize() {
 			return BATCH_BITS_COUNT;
 		}
@@ -65,13 +66,13 @@ namespace Query4 {
 			double num_stat = 0;
 #endif // COUNTMS
 
-			
+
 
 			const auto subgraphSize = subgraph.size();
 			// Initialize visit lists
 			std::array<Bitset*, 2> visitLists;
 			for (int a = 0; a < 2; a++) {
-				const auto ret = posix_memalign(reinterpret_cast<void**>(&(visitLists[a])), 64, sizeof(Bitset)*subgraphSize);//数据对齐（分配内存首地址，对齐边界，指定分配字节大小）
+				const auto ret = posix_memalign(reinterpret_cast<void**>(&(visitLists[a])), 64, sizeof(Bitset)*subgraphSize);//
 				if (unlikely(ret != 0)) {
 					throw - 1;
 				}
@@ -79,7 +80,7 @@ namespace Query4 {
 			}
 
 
-			const uint32_t numQueries = bfsData.size();//本次并行的源点数，即bfs数
+			const uint32_t numQueries = bfsData.size();//
 			assert(numQueries > 0 && numQueries <= BATCH_BITS_COUNT);
 
 			// Initialize seen vector
@@ -107,29 +108,29 @@ namespace Query4 {
 				minPerson = std::min(minPerson, bfsData[pos].person);
 
 #ifdef BI_DIRECTIONAl
-				visitNeighbors += subgraph.retrieve(bfsData[pos].person)->size();//计算源点邻居数目和
+				visitNeighbors += subgraph.retrieve(bfsData[pos].person)->size();//
 #endif
 			}
 
 			// Initialize iteration workstate
-			Bitset processQuery;//processQuery中的每一位，1表示bfs没有搜索完，0表示已经搜索完
-			processQuery.negate();//全置为1
+			Bitset processQuery;//
+			processQuery.negate();//
 
-			uint32_t queriesToProcess = numQueries;//代表还剩余的bfs数
-			alignas(64) uint32_t numDistDiscovered[BATCH_BITS_COUNT];//512，numDistDiscovered每一个数据代表该bfs在一轮搜索中搜索到的新的顶点数
+			uint32_t queriesToProcess = numQueries;//
+			alignas(64) uint32_t numDistDiscovered[BATCH_BITS_COUNT];//512
 			memset(numDistDiscovered, 0, BATCH_BITS_COUNT * sizeof(uint32_t));
 
 			BatchDistance<bit_t, width> batchDist(numDistDiscovered);
 
 			size_t curToVisitQueue = 0;
-			uint32_t nextDistance = 1;//代表bfs的level
+			uint32_t nextDistance = 1;//bfs level
 
 			PersonId startPerson = minPerson;
 
 			// Run iterations
 			do {
 				size_t startTime = tschrono::now();
-				Bitset* const toVisit = visitLists[curToVisitQueue];//visit和visitNext轮替
+				Bitset* const toVisit = visitLists[curToVisitQueue];//
 				Bitset* const nextToVisit = visitLists[1 - curToVisitQueue];
 
 				assert(toVisit != nullptr);
@@ -149,7 +150,7 @@ namespace Query4 {
 						continue;
 					}
 					isempty = false;
-					const auto& curFriends = *subgraph.retrieve(person);//获得邻居节点
+					const auto& curFriends = *subgraph.retrieve(person);//
 					auto friendsBounds = curFriends.bounds();
 					while (friendsBounds.first != friendsBounds.second) {
 #ifdef COUNTMS
@@ -172,10 +173,10 @@ namespace Query4 {
 						toVisit[person].data[i] = BitBaseOp<bit_t>::zero();//reset
 					}
 				}
-				for (PersonId curPerson = 0; curPerson < subgraphSize; ++curPerson) {//为什么从0开始？因为nextvisitList记录了邻居，随机分布
-					
+				for (PersonId curPerson = 0; curPerson < subgraphSize; ++curPerson) {//
+
 #ifdef COUNTMS
-					
+
 					num_stat += 1;
 #endif // COUNTMS
 					for (unsigned i = 0; i < width; i++) {
@@ -198,7 +199,7 @@ namespace Query4 {
 									bfsData[i*TYPE_BITS + j].totalReachable[0] += 1;
 								}
 							}
-							
+
 							if (BitBaseOp<bit_t>::notZero(newVisits)) {
 
 #ifdef COUNTMS
@@ -210,7 +211,7 @@ namespace Query4 {
 						}
 					}
 
-					
+
 				}
 //#ifdef COUNTMS
 	//			num_stat+= subgraphSize;
@@ -258,7 +259,7 @@ namespace Query4 {
 
 				// Reset iteration state
 				//memset(visitLists[curToVisitQueue],0,sizeof(Bitset)*subgraphSize);
-				//memset(numDistDiscovered, 0, BATCH_BITS_COUNT * sizeof(uint32_t));//本轮结束，统计下一轮的BFS探索的新定点数
+				//memset(numDistDiscovered, 0, BATCH_BITS_COUNT * sizeof(uint32_t));//
 
 				// Swap queues
 				startPerson = 0;
@@ -285,7 +286,7 @@ namespace Query4 {
 #ifdef DO_PREFETCH
 			const int p2 = min(PREFETCH, (unsigned int)(limit - startPerson));//PREFETCH=38
 			for (int a = 1; a < p2; a++) {
-				__builtin_prefetch(visitList + a, 0);//visitList数据预取，不超过38，少了startperson???
+				__builtin_prefetch(visitList + a, 0);//
 				// pref=(visitList + a)->data[0];
 			}
 #endif
@@ -331,7 +332,7 @@ namespace Query4 {
 					continue;
 				}
 
-				const auto& curFriends = *subgraph.retrieve(curPerson);//获得邻居节点
+				const auto& curFriends = *subgraph.retrieve(curPerson);//
 				auto friendsBounds = curFriends.bounds();
 #ifdef DO_PREFETCH
 				const int p = min(PREFETCH, (unsigned int)(friendsBounds.second - friendsBounds.first));
@@ -378,7 +379,7 @@ namespace Query4 {
 			uint32_t frontierSize = 0;
 			uint64_t nextVisitNeighbors = 0;
 #endif
-			for (PersonId curPerson = 0; curPerson < limit; ++curPerson) {//为什么从0开始？因为nextvisitList记录了邻居，随机分布
+			for (PersonId curPerson = 0; curPerson < limit; ++curPerson) {//
 #ifdef BI_DIRECTIONAl
 				bool nextVisitNonzero = false;
 #endif
@@ -399,8 +400,8 @@ namespace Query4 {
 				}
 #ifdef BI_DIRECTIONAl
 				if (nextVisitNonzero) {
-					frontierSize++;//新搜索到的顶点数
-					nextVisitNeighbors += subgraph.retrieve(curPerson)->size();//新搜索到的顶点数的邻居数
+					frontierSize++;//
+					nextVisitNeighbors += subgraph.retrieve(curPerson)->size();//
 				}
 #endif
 			}
@@ -438,7 +439,7 @@ namespace Query4 {
 #ifdef DO_PREFETCH
 			const int p2 = min(PREFETCH, (unsigned int)(limit - startPerson));//PREFETCH=38
 			for (int a = 1; a < p2; a++) {
-				__builtin_prefetch(seen + a, 0);//数据预取
+				__builtin_prefetch(seen + a, 0);//
 			}
 #endif
 
@@ -662,7 +663,7 @@ namespace Query4 {
 		}
 
 #endif
-		//processQuery中的每一位，1表示bfs没有搜索完，0表示已经搜索完
+        //
 		//updateProcessQuery(processQuery, pos, numDistDiscovered[pos], bfsData[pos], nextDistance, queriesToProcess);
 		/*static void updateProcessQuery(Bitset& processQuery, const uint32_t pos, const uint32_t numDiscovered,
 			BatchBFSdata& bfsData, const uint32_t distance, uint32_t& queriesToProcess) {
@@ -670,8 +671,8 @@ namespace Query4 {
 			auto field_bit = pos - (field*Bitset::TYPE_BITS_COUNT);
 
 			if (BitBaseOp<bit_t>::notZero(processQuery.data[field] & BitBaseOp<bit_t>::getSetMask(field_bit))) {
-				bfsData.totalReachable += numDiscovered;//某一个源点总共搜索的顶点，除去源点
-				bfsData.totalDistances += numDiscovered * distance;//某一个源点总共搜索的距离
+				bfsData.totalReachable += numDiscovered;//
+				bfsData.totalDistances += numDiscovered * distance;//
 
 				if ((bfsData.componentSize - 1) == bfsData.totalReachable) {
 					processQuery.data[field] = BitBaseOp<bit_t>::andNot(processQuery.data[field], BitBaseOp<bit_t>::getSetMask(field_bit));

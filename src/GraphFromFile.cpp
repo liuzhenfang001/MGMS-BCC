@@ -31,7 +31,7 @@ void GraphFromFile::init(const std::string& edgesFile) {
 			}
 		}
 		fclose(fp);
-		//新建一个sample_文件，每行写上概率。
+		//create a "sample_" file and write the probability on each line.
 	}
 
 	std::vector<float> pro;
@@ -74,7 +74,7 @@ void GraphFromFile::init(const std::string& edgesFile) {
 	});
 	//std::cout << "finish sort" << std::endl;
 
-	//Remove duplicates去除重复项
+	//Remove duplicates
 	std::vector<NodePair> uniqueEdges(temp_edges.size());
 	size_t e = 0;
 	NodePair last(std::numeric_limits<uint64_t>::max(), std::numeric_limits<uint64_t>::max());

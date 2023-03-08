@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "sse.hpp"
@@ -15,12 +16,12 @@ namespace Query4 {
 
 template<typename bit_t, uint64_t width>
 struct BatchDistance {
-   static const bit_t allZeros = 0; 
+   static const bit_t allZeros = 0;
    static constexpr bit_t byteOnes = sizeof(bit_t)==8 ? 0x0101010101010101ul : 0x01010101;
    static const bit_t lastByte = 0xFF;
 
    uint32_t* numDistDiscovered;
-   uint8_t localDiscoveredIteration[width]; 
+   uint8_t localDiscoveredIteration[width];
    alignas(16) bit_t localDiscovered[8*width];
 
    BatchDistance(uint32_t* numDistDiscovered) : numDistDiscovered(numDistDiscovered) {
@@ -290,8 +291,8 @@ struct BatchDistance<__m256i, width> {
       for(unsigned a=0; a<8; a++) {
          uint32_t*__restrict const numDistDiscoveredBase = (uint32_t*)__builtin_assume_aligned(numDistDiscovered + partIx*256+a, 4);
          const __m256i localDiscoveredVal = localDiscovered[partIx*8+a];
-         numDistDiscoveredBase[8*0 ] += _mm256_extract_epi8(localDiscoveredVal, 0);//统计newVisit的第一个字节的第a位
-         numDistDiscoveredBase[8*1 ] += _mm256_extract_epi8(localDiscoveredVal, 1);//统计newVisit的第二个字节的第a位
+         numDistDiscoveredBase[8*0 ] += _mm256_extract_epi8(localDiscoveredVal, 0);//Counts the a-bit of the first byte of newVisit
+         numDistDiscoveredBase[8*1 ] += _mm256_extract_epi8(localDiscoveredVal, 1);//Counts the a-bit of the second byte of newVisit
          numDistDiscoveredBase[8*2 ] += _mm256_extract_epi8(localDiscoveredVal, 2);//
          numDistDiscoveredBase[8*3 ] += _mm256_extract_epi8(localDiscoveredVal, 3);
          numDistDiscoveredBase[8*4 ] += _mm256_extract_epi8(localDiscoveredVal, 4);
@@ -369,7 +370,7 @@ struct BatchDistance<__m256i, width> {
       memset(localDiscovered, 0, sizeof(__m256i)*8*width);
       memset(localDiscoveredIteration, 0, width);
 
-	  
+
    }
 };
 #endif

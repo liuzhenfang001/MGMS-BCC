@@ -1,6 +1,7 @@
-// Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-// Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "TraceStats.hpp"
@@ -66,7 +67,7 @@ namespace Query4
         static const size_t WIDTH = width;                 // 2
         static const size_t TYPE_BITS = sizeof(bit_t) * 8; // bit_t=256
         static const size_t BATCH_BITS_COUNT = sizeof(bit_t) * width * 8;
-        typedef baseBatchBits<bit_t, width> Bitset; // ��ʾһ�������bfs���
+        typedef baseBatchBits<bit_t, width> Bitset;
 
         static constexpr uint64_t batchSize()
         {
@@ -75,7 +76,7 @@ namespace Query4
 
         static void runBatch(std::vector<BatchBFSdata> &bfsData, const PersonSubgraph &subgraph)
         {
-            const uint32_t numQueries = bfsData.size(); // ���β��е�Դ��������bfs��
+            const uint32_t numQueries = bfsData.size();
             assert(numQueries > 0 && numQueries <= BATCH_BITS_COUNT);
             const auto subgraphSize = subgraph.size();
 
@@ -83,7 +84,7 @@ namespace Query4
             verstatus = new baseBatchBits<BITYPE, BITYPE_WIDTH> *[subgraphSize]();
             for (int a = 0; a < subgraphSize; a++)
             {
-                const auto ret = posix_memalign(reinterpret_cast<void **>(&(verstatus[a])), 64, sizeof(baseBatchBits<BITYPE, BITYPE_WIDTH>) * numQueries); // ���ݶ��루�����ڴ��׵�ַ������߽磬ָ�������ֽڴ�С��
+                const auto ret = posix_memalign(reinterpret_cast<void **>(&(verstatus[a])), 64, sizeof(baseBatchBits<BITYPE, BITYPE_WIDTH>) * numQueries);
                 if (unlikely(ret != 0))
                 {
                     std::cout << "unlikely" << std::endl;
@@ -95,8 +96,7 @@ namespace Query4
             next_verstatus = new baseBatchBits<BITYPE, BITYPE_WIDTH> *[subgraphSize]();
             for (int a = 0; a < subgraphSize; a++)
             {
-                const auto ret = posix_memalign(reinterpret_cast<void **>(&(next_verstatus[a])), 64, sizeof(baseBatchBits<BITYPE, BITYPE_WIDTH>) * numQueries); // ���ݶ��루�����ڴ��׵�ַ������߽磬ָ�������ֽڴ�С��
-                if (unlikely(ret != 0))
+                const auto ret = posix_memalign(reinterpret_cast<void **>(&(next_verstatus[a])), 64, sizeof(baseBatchBits<BITYPE, BITYPE_WIDTH>) * numQueries);
                 {
                     std::cout << "unlikely" << std::endl;
                     throw -1;
@@ -107,7 +107,7 @@ namespace Query4
             std::array<Bitset *, 2> visitLists;
             for (int a = 0; a < 2; a++)
             {
-                const auto ret = posix_memalign(reinterpret_cast<void **>(&(visitLists[a])), 64, sizeof(Bitset) * subgraphSize); // ���ݶ��루�����ڴ��׵�ַ������߽磬ָ�������ֽڴ�С��
+                const auto ret = posix_memalign(reinterpret_cast<void **>(&(visitLists[a])), 64, sizeof(Bitset) * subgraphSize);
                 if (unlikely(ret != 0))
                 {
                     throw -1;
@@ -126,7 +126,7 @@ namespace Query4
                 minPerson = std::min(minPerson, per);
             }
 
-            alignas(64) uint32_t numDistDiscovered[BATCH_BITS_COUNT][SAMPLE_NUMS]; // 512��numDistDiscoveredÿһ�����ݴ�����bfs��һ�����������������µĶ�����
+            alignas(64) uint32_t numDistDiscovered[BATCH_BITS_COUNT][SAMPLE_NUMS]; //
             memset(numDistDiscovered, 0, BATCH_BITS_COUNT * SAMPLE_NUMS * sizeof(uint32_t));
 
             BatchDistance<BITYPE, BITYPE_WIDTH> batchDist[BATCH_BITS_COUNT];
@@ -136,17 +136,17 @@ namespace Query4
             }
 
             size_t curToVisitQueue = 0;
-            uint32_t nextDistance = 1; // ����bfs��level
+            uint32_t nextDistance = 1;
 
             PersonId startPerson = minPerson;
 
-            Bitset *toVisit = visitLists[curToVisitQueue]; // visit��visitNext����
+            Bitset *toVisit = visitLists[curToVisitQueue];
             Bitset *nextToVisit = visitLists[1 - curToVisitQueue];
             bool isempty = true;
 
             do
             {
-                toVisit = visitLists[curToVisitQueue]; // visit��visitNext����
+                toVisit = visitLists[curToVisitQueue];
                 nextToVisit = visitLists[1 - curToVisitQueue];
                 isempty = true;
                 size_t startTime = tschrono::now();
@@ -712,7 +712,7 @@ namespace Query4
         }
 
 #endif
-        // processQuery�е�ÿһλ��1��ʾbfsû�������꣬0��ʾ�Ѿ�������
+
         // updateProcessQuery(processQuery, pos, numDistDiscovered[pos], bfsData[pos], nextDistance, queriesToProcess);
         /*static void updateProcessQuery(Bitset& processQuery, const uint32_t pos, const uint32_t numDiscovered,
             BatchBFSdata& bfsData, const uint32_t distance, uint32_t& queriesToProcess) {
@@ -720,8 +720,8 @@ namespace Query4
             auto field_bit = pos - (field*Bitset::TYPE_BITS_COUNT);
 
             // if(BitBaseOp<bit_t>::notZero(processQuery.data[field] & BitBaseOp<bit_t>::getSetMask(field_bit))) {
-            bfsData.totalReachable += numDiscovered;//ĳһ��Դ���ܹ������Ķ��㣬��ȥԴ��
-            bfsData.totalDistances += numDiscovered * distance;//ĳһ��Դ���ܹ������ľ���
+            bfsData.totalReachable += numDiscovered;
+            bfsData.totalDistances += numDiscovered * distance;
 
             /*if((bfsData.componentSize-1)==bfsData.totalReachable) {
                processQuery.data[field] = BitBaseOp<bit_t>::andNot(processQuery.data[field], BitBaseOp<bit_t>::getSetMask(field_bit));

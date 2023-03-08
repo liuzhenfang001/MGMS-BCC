@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include <cstddef>
@@ -20,7 +21,7 @@ namespace awfy {
 
    public:
 	   FixedSizeQueue(size_t size) : elems(new T[size]), startPtr(elems), endPtr(elems), size_(size)
-	   { 
+	   {
 	   }
 
 	   ~FixedSizeQueue() {
@@ -146,9 +147,9 @@ namespace awfy {
 	   size_t size_;
 
    public:
-	   FixedSizeQueue1(size_t size) 
+	   FixedSizeQueue1(size_t size)
 	   {
-		   const auto ret = posix_memalign(reinterpret_cast<void**>(&(elems)), 64, sizeof(T)*size);//数据对齐（分配内存首地址，对齐边界，指定分配字节大小）
+		   const auto ret = posix_memalign(reinterpret_cast<void**>(&(elems)), 64, sizeof(T)*size);//
 		   if (unlikely(ret != 0)) {
 			   throw - 1;
 		   }
@@ -255,7 +256,7 @@ namespace awfy {
 		   else {
 			   return *endPtr++;
 		   }
-		   
+
 	   }
 
 	   void reset(size_t newSize) {
@@ -317,7 +318,7 @@ namespace awfy {
 				startPtr++;
 				return this;
 		   }
-			   
+
 	   }
 
 	   inline T& push_back_pos() {

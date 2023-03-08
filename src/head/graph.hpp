@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 #include"GraphFromFile.hpp"
 #include "log.hpp"
@@ -33,7 +34,7 @@
 //#define SAMPLE_NUMS 10000
 
 /*struct NodePair {
-   uint64_t idA;		//uint64_t是long long类型
+   uint64_t idA;		//uint64_t is long long
    uint64_t idB;
 
    NodePair() { }
@@ -44,8 +45,8 @@
 
 struct GraphData {
    size_t numNodes;			//顶点数
-   std::vector<NodePair> edges;//<0,100><0,104><1,233><1,999><2,3>...<100,0><104,0>...此处是伪id
-   std::unordered_map<uint64_t,uint64_t> revNodeRenaming;//<0,v1><1,v2><2,v3>...此处记录伪id对应的真实id
+   std::vector<NodePair> edges;//<0,100><0,104><1,233><1,999><2,3>...<100,0><104,0>...Here are virtual ID
+   std::unordered_map<uint64_t,uint64_t> revNodeRenaming;//<0,v1><1,v2><2,v3>...record the real ID of virtual ID
    GraphData(const size_t numNodes, std::vector<NodePair> edges, std::unordered_map<uint64_t,uint64_t> revNodeRenaming)
       : numNodes(numNodes), edges(move(edges)), revNodeRenaming(std::move(revNodeRenaming)){
    }
@@ -137,7 +138,7 @@ public:
 	}
 
 	const Entry* getPtr(const size_t index) const __attribute__((pure)) {
-		
+
 		const auto offsetPtr = reinterpret_cast<const uint8_t*>(this) + sizeof(Size) + sizeof(Entry)*index;
 		return reinterpret_cast<const Entry*>(offsetPtr);
 	}
@@ -223,26 +224,26 @@ class Graph {
 public:
    typedef IdType Id;
    typedef SizedList<Id>* Content;
-   typedef uint32_t ComponentId;//连通分量？？
+   typedef uint32_t ComponentId;//The ID of the connecting component
    typedef uint64_t ComponentSize;
 
    const size_t numVertices;
    size_t numEdges;
    //std::vector<float> edges_prob;
-   std::vector<ComponentId> personComponents;//记录每个顶点对应的联通分量id
-   std::vector<ComponentSize> componentSizes;//连通分量个数
+   std::vector<ComponentId> personComponents;//Record the connected component ID for each vertex
+   std::vector<ComponentSize> componentSizes;//Number of connected components
    std::vector<ComponentSize> componentEdgeCount;//
    ComponentSize maxComponentSize;
-   
+
 private:
    Content* table;
-   
+
    std::unordered_map<uint64_t,uint64_t> revNodeRenaming;
 
 public:
    uint8_t* data;
    EdgesBits<BITYPE,BITYPE_WIDTH>** edgesbit;
-   //构造函数，为personComponents分配numVertices个大小空间，每个为0
+   //Constructor function, allocating numVertices size spaces for personComponents, each with 0
    Graph(size_t numVertices) : numVertices(numVertices), personComponents(numVertices), componentSizes(), componentEdgeCount(), maxComponentSize(), table(nullptr), data(nullptr), edgesbit(nullptr){
       // XXX: Maybe posix_memalign helps?
       table = new Content[numVertices]();
@@ -309,15 +310,15 @@ public:
       return numVertices;
    }
 
-   static Graph sampleGraph(const std::vector<NodePair>& GraphEdges,const std::vector<float>& GraphWeight) {//根据graphdata生成persongraph，table包含了邻居节点
+   static Graph sampleGraph(const std::vector<NodePair>& GraphEdges,const std::vector<float>& GraphWeight) {//Generate a persongraph from graphdata, and the table contains neighbor nodes
 	   GraphData graphData = GraphData::sampledata(GraphEdges, GraphWeight);
-	   IdType numPersons = graphData.numNodes;//顶点数
-	   std::vector<NodePair>& edges = graphData.edges;//边
+	   IdType numPersons = graphData.numNodes;//Number of vertices
+	   std::vector<NodePair>& edges = graphData.edges;//Number of edges
 	   Graph personGraph(numPersons);
 	   //personGraph.edges_prob = std::move(graphData.prob);
 	   personGraph.revNodeRenaming = std::move(graphData.revNodeRenaming);
 
-	   std::vector<NodePair> double_edges;//双向边用于划分连通分量
+	   std::vector<NodePair> double_edges;//Bidirectional edges are used to divide the connected components
 	   double_edges.reserve(edges.size() * 2);
 	   for (NodePair& a : edges) {
 		   double_edges.push_back(a);
@@ -346,7 +347,7 @@ public:
 	   const size_t dataSize = (numPersons + edges.size()) * sizeof(IdType);
 	   //std::cout << "start sample one graph" << std::endl;
 	   uint8_t* data = new uint8_t[dataSize]();
-	   {//为personGraph的每个点添加邻居
+	   {//Add neighbors for each vertexof the personGraph
 		   SizedList<IdType>* neighbours = reinterpret_cast<SizedList<IdType>*>(data);
 		   size_t ix = 0;
 
@@ -385,15 +386,15 @@ public:
 	   return std::move(personGraph);
    }
 
-   static Graph loadUCGFromPath(const std::vector<NodePair>& GraphEdges, const std::vector<float>& GraphWeight) {//根据graphdata生成persongraph，table包含了邻居节点
+   static Graph loadUCGFromPath(const std::vector<NodePair>& GraphEdges, const std::vector<float>& GraphWeight) {//Generate a persongraph from graphdata, and the table contains neighbor nodes
 	   //LOG_PRINT("LoadUCGFromPath");
 	   GraphData graphData = GraphData::loadFromPath(GraphEdges, GraphWeight);
 	   //std::vector<NodePair> tempedges = std::move(GraphData::loadComponent(edgesFile))
-	   IdType numPersons = graphData.numNodes;//顶点数
-	   std::vector<NodePair>& edges = graphData.edges;//边
+	   IdType numPersons = graphData.numNodes;//number of vertices
+	   std::vector<NodePair>& edges = graphData.edges;//number of edges
 	   //LOG_PRINT("Nodes: " << numPersons);
 	  // LOG_PRINT("Edges: " << edges.size());
-	   
+
 	   std::vector<NodePair> double_edges;
 	   double_edges.reserve(edges.size() * 2);
 	   for (NodePair& a : edges) {
@@ -449,7 +450,7 @@ public:
 			   neighbours = neighbours->nextList(count);
 		   }
 	   }
-	 
+
 	   personGraph.data = data;
 	   personGraph.numEdges = edges.size();
 	   EdgesBits<BITYPE, BITYPE_WIDTH>** temp_edge;
@@ -458,14 +459,14 @@ public:
 		   const auto& curFriends = *personGraph.retrieve(a);
 		   int size = curFriends.size();
 		   //std::cout << personGraph.mapInternalNodeId(a) << "|" << size << " ";
-		   const auto ret = posix_memalign(reinterpret_cast<void**>(&(temp_edge[a])), 64, sizeof(EdgesBits<BITYPE, BITYPE_WIDTH>)*size);//数据对齐（分配内存首地址，对齐边界，指定分配字节大小）
-		 
+		   const auto ret = posix_memalign(reinterpret_cast<void**>(&(temp_edge[a])), 64, sizeof(EdgesBits<BITYPE, BITYPE_WIDTH>)*size);//Data alignment (allocate first memory address, align boundary, specify allocation byte size)
+
 		   if (unlikely(ret != 0)) {
-			   
+
 			   std::cout << "unlikely" << std::endl;
 			   throw - 1;
 		   }
-		   
+
 		   new(temp_edge[a]) EdgesBits<BITYPE, BITYPE_WIDTH>[size]();
 	   }
 	   personGraph.edgesbit = std::move(temp_edge);
@@ -481,33 +482,33 @@ public:
 					   numof1 += BitBaseOp<BITYPE>::popCount(personGraph.edgesbit[person][count].data[i]);
 					}
 				   //std::cout << personGraph.mapInternalNodeId(person)<<" " << personGraph.mapInternalNodeId(edges[iy].idB)<<" "<< numof1 << std::endl;
-				   
+
 				   count++;
 				   iy++;
 				   edgeid++;
 			   }
 		   }
 	   }
-	  
+
 
 	  /*const auto& curFriendsedges = personGraph.retrieveedges(0);
 	   auto friendsedgesBounds = curFriendsedges->bounds();
 	   while (friendsedgesBounds.first != friendsedgesBounds.second) {
 		   std::cout << (friendsedgesBounds.first) << "address";
 		   std::cout << BitBaseOp<BITYPE>::popCount(friendsedgesBounds.first->data[0]) << std::endl;
-		   
+
 		   friendsedgesBounds.first++;
 	  }*/
 
 		//LOG_PRINT("[LOADING] Created person graph of size: " << dataSize / 1024 << " kb");
-	   
+
 		//LOG_PRINT("start analyze");
 		personGraph.analyzeGraph(uniqueEdges,index);
 		return std::move(personGraph);
    }
 
 private:
-	void analyzeGraph(std::vector<NodePair>& edges, std::vector<size_t>& index) {//划分连通分量
+	void analyzeGraph(std::vector<NodePair>& edges, std::vector<size_t>& index) {//Divide the connectivity component
 		const auto graphSize = size();
 
 		componentSizes.push_back(std::numeric_limits<ComponentSize>::max()); // Component 0 is invalid
@@ -517,9 +518,9 @@ private:
 		awfy::FixedSizeQueue<IdType> toVisit = awfy::FixedSizeQueue<IdType>(graphSize);
 
 		size_t trivialComponents = 0;
-		ComponentId componentId = 1;//连通分量id，1、2、3...
+		ComponentId componentId = 1;//Connecting component IDs, 1, 2, 3...
 		for (IdType node = 0; node < graphSize; node++) {
-			if (personComponents[node] != 0) { continue; }//personComponents初始化默认值为0
+			if (personComponents[node] != 0) { continue; }//personComponents initializes with a default value of 0
 
 			ComponentSize componentSize = 1;
 			personComponents[node] = componentId;
@@ -532,7 +533,7 @@ private:
 				const IdType curNode = toVisit.front();
 				toVisit.pop_front();
 
-				
+
 				/*for (const NodePair& a : edges) {
 					if (a.idA > curNode)
 						break;
@@ -558,21 +559,21 @@ private:
 				}
 
 				/*const auto curNeighbours = retrieve(curNode);
-				componentNeighborCount += curNeighbours->size();//记录每个连通分量边的数量(一条边记录两次--正反)
-				auto neighbourBounds = curNeighbours->bounds();//<i,j>i是顶点id(0,1,2...)指针，j是顶点邻居数量+i的指针
+				componentNeighborCount += curNeighbours->size();//Record the number of edges for each connected component (one edge is recorded twice - front and back)
+				auto neighbourBounds = curNeighbours->bounds();//<i,j> i is the vertex id(0,1,2...) The pointer, j is the pointer to the number of vertex neighbors +i
 				while (neighbourBounds.first != neighbourBounds.second) {
 					const IdType curNeighbour = *neighbourBounds.first;
 					++neighbourBounds.first;
-					if (personComponents[curNeighbour] != 0) { continue; }//排除了重复项，比如0和999互为邻居，就不会重复将0插入toVisit
+					if (personComponents[curNeighbour] != 0) { continue; }//Duplicates are excluded, such as 0 and 999 neighbors, and 0 is not repeatedly inserted into toVisit
 					personComponents[curNeighbour] = componentId;
 					componentSize++;
 					toVisit.push_back_pos() = curNeighbour;
 				}*/
 			} while (!toVisit.empty());
 
-			componentEdgeCount.push_back(componentNeighborCount); //记录连通分量对应的边数
-			componentSizes.push_back(componentSize);//记录连通分量对应的顶点数
-			if (componentSize > maxComponentSize) {//maxComponentSize记录最大的连通分量的顶点数（顶点越多连通分量越大）
+			componentEdgeCount.push_back(componentNeighborCount); //Record the number of edges corresponding to the connected component
+			componentSizes.push_back(componentSize);//Record the number of vertices corresponding to the connected component
+			if (componentSize > maxComponentSize) {//maxComponentSize records the number of vertices of the largest connected component (the more vertices, the larger the connected component)
 				maxComponentSize = componentSize;
 			}
 			if (componentSize < 5) {
@@ -602,9 +603,9 @@ private:
       awfy::FixedSizeQueue<IdType> toVisit = awfy::FixedSizeQueue<IdType>(graphSize);
 
       size_t trivialComponents=0;
-      ComponentId componentId=1;//连通分量id，1、2、3...
+      ComponentId componentId=1;//Connecting component IDs, 1, 2, 3...
       for(IdType node=0; node<graphSize; node++) {
-         if(personComponents[node]!=0) { continue; }//personComponents初始化默认值为0
+         if(personComponents[node]!=0) { continue; }//personComponents initializes with a default value of 0
 
          ComponentSize componentSize=1;
          personComponents[node]=componentId;
@@ -618,27 +619,27 @@ private:
             toVisit.pop_front();
 
             const auto curNeighbours=retrieve(curNode);
-            componentNeighborCount += curNeighbours->size();//记录每个连通分量边的数量(一条边记录两次--正反)
+            componentNeighborCount += curNeighbours->size();//Record the number of edges for each connected component (one edge is recorded twice - front and back)
 
-            auto neighbourBounds = curNeighbours->bounds();//<i,j>i是顶点id(0,1,2...)指针，j是顶点邻居数量+i的指针
+            auto neighbourBounds = curNeighbours->bounds();//<i,j>  i is the vertex id(0,1,2...) The pointer, j is the pointer to the number of vertex neighbors +i
             while(neighbourBounds.first != neighbourBounds.second) {
                const IdType curNeighbour=*neighbourBounds.first;
                ++neighbourBounds.first;
-               if (personComponents[curNeighbour]!=0) { continue; }//排除了重复项，比如0和999互为邻居，就不会重复将0插入toVisit
+               if (personComponents[curNeighbour]!=0) { continue; }//Duplicates are excluded, such as 0 and 999 neighbors, and 0 is not repeatedly inserted into toVisit
                personComponents[curNeighbour]=componentId;
                componentSize++;
                toVisit.push_back_pos() = curNeighbour;
             }
          } while(!toVisit.empty());
 
-         componentEdgeCount.push_back(componentNeighborCount); //记录连通分量对应的边数
-         componentSizes.push_back(componentSize);//记录连通分量对应的顶点数
-         if(componentSize>maxComponentSize) {//maxComponentSize记录最大的连通分量的顶点数（顶点越多连通分量越大）
+         componentEdgeCount.push_back(componentNeighborCount); //Record the number of edges corresponding to the connected component
+         componentSizes.push_back(componentSize);//Record the number of vertices corresponding to the connected component
+         if(componentSize>maxComponentSize) {//maxComponentSize records the number of vertices of the largest connected component (the more vertices, the larger the connected component)
             maxComponentSize = componentSize;
          }
          if(componentSize<5) {
             trivialComponents++;
-         } 
+         }
          componentId++;
 
          // Check for overflow

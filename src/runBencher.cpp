@@ -15,7 +15,7 @@ Code must not be used, distributed, without written consent by the authors.
         bfsType = std::to_string(sizeof(CTYPE) * 8) + "_" + std::to_string(WIDTH);                                                                                              \
     }
 
-//./runBencher ./test_queries/ldbc10k.txt 1 8 64 1 128 f
+///execute code:   ./runBencher ./test_queries/ldbc10k.txt 1 8 64 1 128 f
 int main(int argc, char **argv)
 {
     if (argc != 6 && argc != 7 && argc != 8)
@@ -26,13 +26,13 @@ int main(int argc, char **argv)
 
     std::string dataname = Queries::getdataname(std::string(argv[1]));
     // LOG_PRINT("dataset: " << dataname);
-    Queries queries = Queries::loadFromFile(std::string(argv[1])); /// ���TXT�ļ��������Ϣtest
+    Queries queries = Queries::loadFromFile(std::string(argv[1]));
     const int numRuns = std::stoi(std::string(argv[2]));
 
     // size_t bfsLimit = std::numeric_limits<uint64_t>::max();
     size_t bfsLimit = argc >= 7 ? std::stoi(std::string(argv[6])) : std::numeric_limits<uint64_t>::max();
     bool checkNumTasks = argc >= 8 && argv[7][0] == 'f' ? false : true;
-    size_t numThreads = std::thread::hardware_concurrency() / 2; // ��ȡӲ��֧�ֵĲ����߳���.
+    size_t numThreads = std::thread::hardware_concurrency() / 2;
     if (argc > 3)
     {
         numThreads = std::stoi(std::string(argv[3]));
@@ -83,8 +83,8 @@ int main(int argc, char **argv)
     }
     else
     {
-        const int batchType = std::stoi(std::string(argv[4]));  // �Ĵ�������
-        const int batchWidth = std::stoi(std::string(argv[5])); // �Ĵ�������
+        const int batchType = std::stoi(std::string(argv[4]));  // the type of algorithm
+        const int batchWidth = std::stoi(std::string(argv[5])); // width
         GEN_BENCH_BRANCH(if, __m128i, 8)                        // 1024.
         GEN_BENCH_BRANCH(else if, __m128i, 4)                   // 512
         GEN_BENCH_BRANCH(else if, __m128i, 1)                   // 128
@@ -153,7 +153,6 @@ int main(int argc, char **argv)
 
             for (int i = 0; i < SAMPLE_NUMS; i++)
             {
-                // ������һ��ͼ
                 size_t startSample = tschrono::now();
                 const auto personGraph = Graph<Query4::PersonId>::sampleGraph(grapfile.edges, grapfile.weight);
                 // LOG_PRINT("Compenents: " << personGraph.componentSizes.size());
@@ -173,10 +172,8 @@ int main(int argc, char **argv)
                 }
                 bencher->initTrace(personGraph.numVertices, personGraph.numEdges, numThreads, bfsLimit, bfsType, dataname);
                 bencher->run(7, personGraph, query.reference, workers, bfsLimit, SampleTime, i == (SAMPLE_NUMS - 1));
-                // std::cout << bencher->lastRuntime() << "ms ";
                 std::cout.flush();
             }
-            // std::cout << bencher->getMinTrace() << std::endl;
         }
     }
     workers.close();

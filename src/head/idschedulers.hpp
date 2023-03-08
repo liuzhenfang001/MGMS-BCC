@@ -1,6 +1,7 @@
-//Copyright (C) 2014 by Manuel Then, Moritz Kaufmann, Fernando Chirigati, Tuan-Anh Hoang-Vu, Kien Pham, Alfons Kemper, Huy T. Vo
-//
-//Code must not be used, distributed, without written consent by the authors
+/**
+Copyright (C) 2023/03/08 by Zhenfang Liu, Jianxiong Ye.
+Code must not be used, distributed, without written consent by the authors.
+*/
 #pragma once
 
 #include "base.hpp"
@@ -39,7 +40,7 @@ struct DegreeOrdering {
          maxBfs=ids.size();
       }
       // Sort by degree
-      std::sort(ids.begin(), ids.begin()+maxBfs, [&subgraph](const Query4::PersonId a, const Query4::PersonId b) {//小连通分量id在前，同一id的让邻居多的在前
+      std::sort(ids.begin(), ids.begin()+maxBfs, [&subgraph](const Query4::PersonId a, const Query4::PersonId b) {//The small connected component ID is first, and the same ID makes the neighbors more in front
          return subgraph.personComponents[a]<subgraph.personComponents[b] || (subgraph.personComponents[a]==subgraph.personComponents[b] && subgraph.retrieve(a)->size() > subgraph.retrieve(b)->size());
       });
    }

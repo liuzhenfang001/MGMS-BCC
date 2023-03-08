@@ -8,11 +8,11 @@ Code must not be used, distributed, without written consent by the authors.
 #include <atomic>
 #include <pthread.h>
 
-#include <sys/syscall.h> /*此头必须带上*/
+#include <sys/syscall.h> /*This head is important*/
 
 pid_t gettid()
 {
-	return syscall(SYS_gettid); /*这才是内涵*/
+	return syscall(SYS_gettid); /*That's the point*/
 }
 
 ///--- Scheduler related methods
@@ -130,10 +130,11 @@ void Scheduler::waitAllFinished() {
 }
 
 // Executor related implementation
-void Executor::run() {//cpu_set_t是线程所拥有的一个数据结构，位掩码的位数与逻辑cpu数一样，表示本线程可以运行在哪些CPU中
+// cpu_set_t is a data structure owned by a thread, and the bitmask has the same number of bits as the number of logical CPUs, indicating which CPUs the thread can run on
+void Executor::run() {
    cpu_set_t cpuset;
-   CPU_ZERO(&cpuset);//对 CPU 集 set 进行初始化，将其设置为空集。
-   CPU_SET(coreId, &cpuset);//将 cpu 加入 CPU 集 set 中
+   CPU_ZERO(&cpuset); // Initialize the CPU set to an empty set.
+   CPU_SET(coreId, &cpuset); //Add the cpu to the CPU set.
    pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
 
    //LOG_PRINT("[Executor"<<gettid()<<"] Starting");
