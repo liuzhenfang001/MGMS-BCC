@@ -91,6 +91,7 @@ struct BFSRunner {
 		BatchBit<BITYPE, BITYPE_WIDTH>* change_verstatus;
 		{
 			const auto ret = posix_memalign(reinterpret_cast<void**>(&change_verstatus), 128, sizeof(BatchBit<BITYPE, BITYPE_WIDTH>)*subgraphSize);//
+			if (unlikely(ret != 0)) {
 				std::cout << "unlikely" << std::endl;
 				throw - 1;
 			}
@@ -415,7 +416,7 @@ struct BFSRunner {
 		do {
 		   size_t startTime = tschrono::now();
 
-		   const Persons personsRemaining=(bfsData.componentSize-1)-bfsData.totalReachable;//Ê£ÓàµÄ¶¥µãÊý
+		   const Persons personsRemaining=(bfsData.componentSize-1)-bfsData.totalReachable;//
 		   Persons numDiscovered = runRound(subgraph, seen, toVisit, toVisit.size(), personsRemaining);
 		   assert(distance<std::numeric_limits<Distance>::max());
 		   distance++;

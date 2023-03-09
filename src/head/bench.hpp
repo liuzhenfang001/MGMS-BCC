@@ -37,12 +37,12 @@ struct Queries {
       Queries queries;
 
       Tokenizer tokenizer(file.mapping, file.size);
-      // Read queries
+      // Read queries (a lot of datasets)
       while(!tokenizer.isFinished()) {
          Query query;
-         query.numNodes = tokenizer.readId(' ');//TXT file first data "id"
-         query.dataset = tokenizer.readStr(' ');//Obtain the csv file name
-         query.reference = tokenizer.readStr('\n');//Get everything in the file (top-k reference of closeness centrality)
+         query.numNodes = tokenizer.readId(' ');//first data of TXT file (ID)
+         query.dataset = tokenizer.readStr(' ');//Obtain the second file name (real dataset name in file 'data')
+         query.reference = tokenizer.readStr('\n');//Get the string until '\n' in the file (some descirbe)
          if(query.reference.size()==0) {
             FATAL_ERROR("[Queries] Could not load reference result, is it specified?");
          }
@@ -79,7 +79,7 @@ struct BFSBenchmark {
 
    virtual size_t batchSize() = 0;
 
-   virtual void initTrace(size_t numVertices, size_t numEdges, size_t numThreads, size_t maxBfs, std::string bfsType, std::string dataname) = 0;
+   virtual void initTrace(size_t numVertices, size_t numEdges, size_t numThreads, size_t maxBfs, size_t numSample, std::string bfsType, std::string dataname) = 0;
 
    virtual std::string getMinTrace() = 0;
 };
@@ -111,7 +111,7 @@ struct SpecializedBFSBenchmark : public BFSBenchmark {
       runtimes.push_back(runtime);
 	  //std::cout << result << std::endl;
       RunnerTraceStats& stats = RunnerTraceStats::getStats();
-	  //std::cout << sampletime << " " << runtime << std::endl;
+	  //std::cout << BFStime << " " << runtime << std::endl;
 	  stats.addSampleTime(sampletime);
 	  stats.addBFSTime(runtime);
 	  //std::cout << stats.getnumR() << std::endl;
@@ -130,10 +130,10 @@ struct SpecializedBFSBenchmark : public BFSBenchmark {
       return BFSRunnerT::batchSize();
    }
 
-   virtual void initTrace(size_t numVertices, size_t numEdges, size_t numThreads, size_t maxBfs, std::string bfsType, std::string dataname) {
+   virtual void initTrace(size_t numVertices, size_t numEdges, size_t numThreads, size_t maxBfs, size_t numSample, std::string bfsType, std::string dataname) {
       RunnerTraceStats& stats = RunnerTraceStats::getStats();
       // TODO: Account for overriding of batch size by env variale
-      stats.init(numVertices, numEdges, batchSize(), BFSRunnerT::TYPE, BFSRunnerT::TYPE_BITS, BFSRunnerT::WIDTH, numThreads, maxBfs, bfsType, dataname);
+      stats.init(numVertices, numEdges, batchSize(), BFSRunnerT::TYPE, BFSRunnerT::TYPE_BITS, BFSRunnerT::WIDTH, numThreads, maxBfs, numSample, bfsType, dataname);
    }
 
    virtual std::string getMinTrace() {

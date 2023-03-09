@@ -58,6 +58,7 @@ class TraceStats
     size_t width;
     size_t numThreads;
     size_t maxBfs;
+    size_t numSample;
     std::string bfsType;
     size_t sampleTime;
     size_t BFSTime;
@@ -95,7 +96,7 @@ public:
         return *globalStats;
     }
 
-    void init(size_t numVertices, size_t numEdges, size_t batchSize, size_t runnerType, size_t typeSize, size_t width, size_t numThreads, size_t maxBfs, std::string bfsType, std::string dataset)
+    void init(size_t numVertices, size_t numEdges, size_t batchSize, size_t runnerType, size_t typeSize, size_t width, size_t numThreads, size_t maxBfs, size_t numSample, std::string bfsType, std::string dataset)
     {
         this->numVertices = numVertices;
         this->numEdges = numEdges;
@@ -106,6 +107,7 @@ public:
         this->width = width;
         this->numThreads = numThreads;
         this->maxBfs = maxBfs;
+        this->numSample = numSample;
         this->bfsType = bfsType;
         this->dataset = dataset;
         this->numR = 0;
@@ -236,7 +238,7 @@ public:
         numTraversedEdges = c;
     }
 
-    std::string prelude(std::string metric, size_t totalDuration)
+    std::string prelude0(std::string metric, size_t totalDuration)
     {
         return "[" + metric + "]\t" + std::to_string(numVertices) + "\t" + std::to_string(numEdges) + "\t" + std::to_string(numThreads) + "\t" + std::to_string(typeSize) + "\t" + std::to_string(width) + "\t" + std::to_string(batchSize) + "\t" + std::to_string(BFSTime + sampleTime) + "\t" + std::to_string(BFSTime) + "\t" + std::to_string(sampleTime) + "\t" + std::to_string(maxBfs) + "\t" + bfsType;
     }
@@ -245,6 +247,13 @@ public:
     {
         return "[" + metric + "]\t\t" + std::to_string(numVertices) + "\t" + std::to_string(numEdges) + "\t" + std::to_string(numTraversedEdges) + "\t" + std::to_string(batchSize) + "\t" + std::to_string(numThreads) + "\t" + "MSMBFS" + "\t" + std::to_string(typeSize) + "\t" + std::to_string(width) + "\t" + std::to_string(totalDuration) + "\t" + std::to_string(maxBfs) + "\t" + bfsType;
     }
+
+    std::string prelude(std::string metric, size_t totalDuration)
+    {
+        return "[" + metric + "]\t" + std::to_string(numVertices) + "\t" + std::to_string(numEdges) + "\t" + std::to_string(BFSTime + sampleTime) + "\t" + std::to_string(BFSTime) + "\t" + std::to_string(sampleTime) + "\t" + std::to_string(maxBfs) + "\t" + std::to_string(numSample) + "\t" + std::to_string(numThreads) + "\t" + bfsType;
+    }
+
+    ///print: [datasets file] [total time] [BFS time] [sample time] [number of source vertices] [sample number] [thread number] [algorithm name] [number of getting neighbors] [number of getting states]
     std::string print(size_t totalDuration)
     {
         size_t lastRound = 0;
@@ -257,9 +266,11 @@ public:
         }
 
         std::stringstream ss;
+        ss << prelude(dataset, totalDuration) << "\t" << num_neigber << "\t" << num_stat << std::endl;
         // ss << "Dataset\t\tnumV\tnumE\tnumTE\tSize\tThreas\tType\tsize\twidth\tAllTime\tnumQ\tBfsType\tRounds\tnRound\tRoundTime" << std::endl;
         // ss << "Dataset\t\tnumV\tnumE\tThread\tType\tSize\tWidth\tBatch\tAllTime\tNumQ\tBfsType\tRounds\tnRound\tRoundTime" << std::endl;
-        ss << prelude(dataset, totalDuration) << "\t" << lastRound << "\t" << num_neigber << "\t" << num_stat << std::endl;
+        //ss << prelude(dataset, totalDuration) << "\t" << lastRound << "\t" << num_neigber << "\t" << num_stat << std::endl;
+
         // for (int i = 1; i <= lastRound; ++i) {
         //  ss<<prelude1("TDUR",totalDuration)<<"\t"<<i<<"\t"<<numRounds[i]<<"\t"<<roundDurations[i]<<" ms"<<std::endl;
         //}

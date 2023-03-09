@@ -97,6 +97,7 @@ namespace Query4
             for (int a = 0; a < subgraphSize; a++)
             {
                 const auto ret = posix_memalign(reinterpret_cast<void **>(&(next_verstatus[a])), 64, sizeof(baseBatchBits<BITYPE, BITYPE_WIDTH>) * numQueries);
+                if (unlikely(ret != 0))
                 {
                     std::cout << "unlikely" << std::endl;
                     throw -1;

@@ -31,7 +31,8 @@ Code must not be used, distributed, without written consent by the authors.
 #define BITYPE  __m256i
 #define BITYPE_WIDTH 4
 #define SAMPLE_NUMS sizeof(BITYPE)*8*BITYPE_WIDTH
-//#define SAMPLE_NUMS 10000
+//Here SAMPLE_NUMS=1024
+
 
 /*struct NodePair {
    uint64_t idA;		//uint64_t is long long

@@ -114,6 +114,7 @@ namespace Query4 {
 			std::array<Bitset*, 2> visitLists;
 			for (int a = 0; a < 2; a++) {
 				const auto ret = posix_memalign(reinterpret_cast<void**>(&(visitLists[a])), 64, sizeof(Bitset)*subgraphSize);//
+				if (unlikely(ret != 0)) {
 					throw - 1;
 				}
 				new(visitLists[a]) Bitset[subgraphSize]();
