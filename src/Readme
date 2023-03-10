@@ -1,20 +1,24 @@
-# Algorithms
+## Algorithms
 This repository contains some batch algorithms(MGMS-BCC, MG-BCC, MS-BCC) for computing closeness centrality in uncertain graph. MGMS-BCC, MG-BCC and MS-BCC implement techniques proposed in "Closeness Centrality on Uncertain Graphs" (TWEB 23). 
 
 
 ## The format of the dataset
-1. The information file of dataset file "XXX.txt" in file "./test_queries"
+1. The information file of dataset file is in file "./test_queries"
+# The format of dataset's information file "XXX.txt" is
 [ID] [path of datasets] [reference]
 
-For example: the content of information file "test.txt" is
-1 test_queries/data/test.txt BFS-Sharing
+    # For example: the content of information file "test.txt" is
+    1 test_queries/data/test.txt BFS-Sharing
 
 
-2. The dataset file "XXX.txt" in file "./test_queries/data": 
+2. The dataset file is in file "./test_queries/data"
+# The format of dataset file "XXX.txt" is
 # FromNodeId|ToNodeId
 u1|v1
 u2|v2
 ...
+
+Where the u1,u2,..., and v1,v2,... are vertices. 
 
 
 ## Complie Commend
@@ -28,7 +32,7 @@ The file for parameter [datasets file] is a list of vertex pairs(u v) representi
 The parameter [number of execution times] refers to the number of times the algorithm is run.
 The parameter [Type of algorithm] refers to the type of algorithm. Optional are MGMS-BCC, MG-BCC, MS-BCC, MGMS-BCC-unOPT, baseline. Where MGMS-BCC is the default optimized MGMS-BCC algorithm, MGMS-BCC-unOPT refers to the unoptimized MGMS-BCC algorithm and baseline is the BasicBCC algorithm mentioned in the paper.
 The parameter [multiples of 64] refers to setting the MG-BCC to run 64 * [multiples of 64] BFS in parallel.
-The parameter f instructs the computer to enforce the algorithm.
+The parameter f instructs the computer to force the algorithm to run.
 
 For example:
 -----------------------------------------------

@@ -1,0 +1,51 @@
+## Algorithms
+This repository contains some batch algorithms(MGMS-BCC, MG-BCC, MS-BCC) for computing closeness centrality in uncertain graph. MGMS-BCC, MG-BCC and MS-BCC implement techniques proposed in "Closeness Centrality on Uncertain Graphs" (TWEB 23). 
+
+
+## The format of the dataset
+1. The information file of dataset file is in file "./test_queries"
+# The format of dataset's information file "XXX.txt" is
+[ID] [path of datasets] [reference]
+
+    # For example: the content of information file "test.txt" is
+    1 test_queries/data/test.txt BFS-Sharing
+
+
+2. The dataset file is in file "./test_queries/data"
+# The format of dataset file "XXX.txt" is
+# FromNodeId|ToNodeId
+u1|v1
+u2|v2
+...
+
+Where the u1,u2,..., and v1,v2,... are vertices. 
+
+
+## Complie Commend
+make
+
+
+## Run Commend
+[executaion file] [datasets file] [number of execution times] [number of thread] [Type of algorithm] [multiples of 64] [number of source vertices] f
+
+The file for parameter [datasets file] is a list of vertex pairs(u v) representing the edges in the graph.
+The parameter [number of execution times] refers to the number of times the algorithm is run.
+The parameter [Type of algorithm] refers to the type of algorithm. Optional are MGMS-BCC, MG-BCC, MS-BCC, MGMS-BCC-unOPT, baseline. Where MGMS-BCC is the default optimized MGMS-BCC algorithm, MGMS-BCC-unOPT refers to the unoptimized MGMS-BCC algorithm and baseline is the BasicBCC algorithm mentioned in the paper.
+The parameter [multiples of 64] refers to setting the MG-BCC to run 64 * [multiples of 64] BFS in parallel.
+The parameter f instructs the computer to force the algorithm to run.
+
+For example:
+-----------------------------------------------
+./runBencher ./test_queries/test.txt 1 1 MGMS-BCC 1 5 f
+./runBencher ./test_queries/test.txt 2 8 MGMS-BCC 1 8 f
+./runBencher ./test_queries/Slash.txt 1 1 MGMS-BCC 1 1000 f
+./runBencher ./test_queries/Slash.txt 1 1 MG-BCC 1 1000 f
+-----------------------------------------------
+
+
+## Output
+[datasets file] [total time] [BFS time] [sample time] [number of source vertices] [sample number] [thread number] [algorithm name] [number of getting neighbors] [number of getting states]
+
+The parameter [number of getting neighbors] refers to the total number of vertex neighbors that the algorithm gets.
+The parameter [number of getting states] refers to the total number of vector "states" viewed by the algorithm. 
+
