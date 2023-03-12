@@ -75,12 +75,6 @@ int main(int argc, char **argv)
         maxBatchSize = 1;
         bfsType = "BaseLine";
     }
-    else if (std::string(argv[4]) == "simple")
-    {
-        bencher = new SpecializedBFSBenchmark<Query4::simpleHugeBatchBfs<uint64_t, 1, false>>("simpleHugeBatchBfs");
-        maxBatchSize = 64;
-        bfsType = "simpleBFS";
-    }
     else if (std::string(argv[4]) == "GCC2")
     {
         bencher = new SpecializedBFSBenchmark<Query4::HugeBatchBfsforGCC2<uint64_t, 1, false>>("HugeBatchBfsforGCC2");
