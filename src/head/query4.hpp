@@ -21,7 +21,6 @@ Code must not be used, distributed, without written consent by the authors.
 #include "mbfs.hpp"
 #include "baseline.hpp"
 #include "statistics.hpp"
-#include "batchhugenoAMA.hpp"
 #include "batchhugeGCC2.hpp"
 #include <mutex>
 #include <cmath>
